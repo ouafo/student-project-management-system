@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrierung</title>
+</head>
+<body>
+<h2>Registration</h2>
+<div class="register-container">
+<form class="register-form">
+    <div class="Name-group">
+    <label for="fullname">Name</label>
+    <input type="text" id="fullname" placeholder="Name..." name="surname"/>
+    </div>
+    <div class="Vorname-group">
+    <label for="username">Vorname</label>
+    <input type="text" id="username" placeholder="Vorname..." name ="firstname"/>
+    </div>
+    <div class="Mail-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="Email address..." name="email"/>
+    </div>
+    <div class="Pass-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="***********" name="pwd"/>
+    </div>
+    <button type="submit" class="signup-btn">Registration</button>
+</form>
+</div>
+</body>
+</html>
