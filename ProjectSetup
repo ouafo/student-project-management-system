@@ -1,0 +1,123 @@
+Ganze Setup-Prozess im Blick
+SCHRITT 1 — Git & Repository
+─────────────────────────────────────
+1. Git installieren → git-scm.com/download/win
+   Wichtige Optionen:
+   ✅ VS Code als Standard Editor
+   ✅ main als Standard Branch
+   ✅ Git from command line
+   ✅ Windows Secure Channel
+   ✅ Checkout Windows, Commit Unix
+   ✅ Git Credential Manager
+
+2. Git konfigurieren:
+   git config --global user.name 'Dein Name'
+   git config --global user.email 'deine@email.de'
+4. Repository klonen:
+   git clone [Repository URL]
+   cd student-project-management-system
+─────────────────────────────────────
+SCHRITT 2 — PyCharm
+─────────────────────────────────────
+1. PyCharm installieren
+2. Plugins installieren:
+   ✅ Django
+   ✅ .env files support
+   ✅ Rainbow Brackets
+   ✅ GitToolBox
+   ✅ Indent Rainbow
+
+3. Projekt öffnen:
+   File → Open → Projekt Ordner
+─────────────────────────────────────
+SCHRITT 3 — Python & venv
+─────────────────────────────────────
+1. Python installieren
+   → python.org/downloads
+    "Add Python to PATH" ankreuzen!
+2. Terminal in PyCharm öffnen
+3. Git Bash als Standard Terminal:
+   Strg + Shift + P
+   → "Select Default Profile"
+   → "Git Bash"
+4. Virtual Environment erstellen:
+   python -m venv venv
+5. venv aktivieren:
+   source venv/Scripts/activate
+   → (venv) muss sichtbar sein!
+6. Packages installieren:
+   pip install -r requirements.txt
+
+─────────────────────────────────────
+SCHRITT 4 — PostgreSQL
+─────────────────────────────────────
+1. PostgreSQL installieren
+   → postgresql.org/download/windows
+-	 Passwort merken! (keine Umlaute!)
+2. In pgAdmin:
+   Rechtsklick auf Databases
+   → Create → Database
+   → Name: boardify_db
+   → Save
+─────────────────────────────────────
+SCHRITT 5 — .env Datei erstellen
+─────────────────────────────────────
+Neue Datei '.env' im Hauptordner erstellen:
+Inhalt:
+SECRET_KEY=django-insecure-boardify-secret-key-2026
+DEBUG=True
+DB_NAME=boardify_db
+DB_USER=postgres
+DB_PASSWORD=dein-postgresql-passwort
+DB_HOST=localhost
+DB_PORT=5432
+-	 Eigenes PostgreSQL Passwort eintragen!
+-	 Keine Umlaute im Passwort!
+─────────────────────────────────────
+SCHRITT 6 — Django einrichten
+─────────────────────────────────────
+1. Interpreter setzen:
+   File → Settings → Python Interpreter
+   → Add Interpreter → Existing
+   → venv\Scripts\python.exe
+
+2. Datenbank migrieren(Terminal):
+   python manage.py migrate
+3. Superuser erstellen:
+   python manage.py createsuperuser
+   Username: admin
+   Email: deine@email.de
+   Password: [sicheres Passwort]
+4. Server starten:
+   python manage.py runserver
+─────────────────────────────────────
+SCHRITT 7 — Testen
+─────────────────────────────────────
+Browser öffnen:
+http://127.0.0.1:8000 → Django Startseite
+http://127.0.0.1:8000/admin → Admin Panel
+─────────────────────────────────────
+SCHRITT 8 — Eigenen Branch wechseln
+─────────────────────────────────────
+git fetch --all
+Teilnehmer:
+git checkout dein Branch
+─────────────────────────────────────
+CHECKLISTE
+─────────────────────────────────────
+- [ ] Git installiert & konfiguriert
+- [ ] Repository geklont
+- [ ] PyCharm installiert & konfiguriert
+- [ ] Python installiert
+- [ ] venv erstellt & aktiviert
+- [ ] pip install -r requirements.txt
+- [ ] PostgreSQL installiert
+- [ ] boardify_db erstellt
+- [ ] .env Datei erstellt
+- [ ] Interpreter gesetzt
+- [ ] migrate erfolgreich
+- [ ] Superuser erstellt
+- [ ] http://127.0.0.1:8000
+- [ ] http://127.0.0.1:8000/admin
+- [ ] Auf eigenem Branch
+Bei Problemen → melden
