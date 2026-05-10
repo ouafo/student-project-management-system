@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Kanban Board</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .page {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 30px;
+        }
+
+        .tabs a {
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .tabs a.active {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 8px;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .columns {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .column {
+            background: #eef2f7;
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .column h2 {
+            font-size: 18px;
+            margin-top: 0;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        }
+
+        .task-card a {
+            text-decoration: none;
+            color: #111827;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .task-meta {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            background: #3b82f6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .hoch {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .mittel {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .niedrig {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        @media (max-width: 1100px) {
+            .columns {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .columns {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div class="tabs">
+                <a href="#" class="">Aufgaben</a>
+                <a href="{% url 'aufgaben:kanban_board' %}" class="active">Kanban Board</a>
+                <a href="#">Chat</a>
+            </div>
+
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="btn">+ Neue Aufgabe</a>
+        </div>
+
+        <div class="columns">
+            <div class="column">
+                <h2>Offen</h2>
+                {% for aufgabe in offen %}
+                    <div class="task-card">
+                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}">{{ aufgabe.titel }}</a>
+                        <div class="badge {{ aufgabe.prioritaet }}">{{ aufgabe.get_prioritaet_display }}</div>
+                        <div class="task-meta">
+                            <span>
+                                {% if aufgabe.deadline %}
+                                    {{ aufgabe.deadline|date:"d.m.Y" }}
+                                {% else %}
+                                    Keine Deadline
+                                {% endif %}
+                            </span>
+                            <div class="avatar">
+                                {% if aufgabe.zugewiesen_an %}
+                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Keine Aufgaben</p>
+                {% endfor %}
+            </div>
+
+            <div class="column">
+                <h2>In Bearbeitung</h2>
+                {% for aufgabe in in_bearbeitung %}
+                    <div class="task-card">
+                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}">{{ aufgabe.titel }}</a>
+                        <div class="badge {{ aufgabe.prioritaet }}">{{ aufgabe.get_prioritaet_display }}</div>
+                        <div class="task-meta">
+                            <span>
+                                {% if aufgabe.deadline %}
+                                    {{ aufgabe.deadline|date:"d.m.Y" }}
+                                {% else %}
+                                    Keine Deadline
+                                {% endif %}
+                            </span>
+                            <div class="avatar">
+                                {% if aufgabe.zugewiesen_an %}
+                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Keine Aufgaben</p>
+                {% endfor %}
+            </div>
+
+            <div class="column">
+                <h2>In Überprüfung</h2>
+                {% for aufgabe in in_ueberpruefung %}
+                    <div class="task-card">
+                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}">{{ aufgabe.titel }}</a>
+                        <div class="badge {{ aufgabe.prioritaet }}">{{ aufgabe.get_prioritaet_display }}</div>
+                        <div class="task-meta">
+                            <span>
+                                {% if aufgabe.deadline %}
+                                    {{ aufgabe.deadline|date:"d.m.Y" }}
+                                {% else %}
+                                    Keine Deadline
+                                {% endif %}
+                            </span>
+                            <div class="avatar">
+                                {% if aufgabe.zugewiesen_an %}
+                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Keine Aufgaben</p>
+                {% endfor %}
+            </div>
+
+            <div class="column">
+                <h2>Erledigt</h2>
+                {% for aufgabe in erledigt %}
+                    <div class="task-card">
+                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}">{{ aufgabe.titel }}</a>
+                        <div class="badge {{ aufgabe.prioritaet }}">{{ aufgabe.get_prioritaet_display }}</div>
+                        <div class="task-meta">
+                            <span>
+                                {% if aufgabe.deadline %}
+                                    {{ aufgabe.deadline|date:"d.m.Y" }}
+                                {% else %}
+                                    Keine Deadline
+                                {% endif %}
+                            </span>
+                            <div class="avatar">
+                                {% if aufgabe.zugewiesen_an %}
+                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Keine Aufgaben</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
