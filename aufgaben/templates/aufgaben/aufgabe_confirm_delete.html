@@ -1,52 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <title>Aufgabe löschen</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            padding: 30px;
-        }
-
-        .box {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .btn {
-            border: none;
-            padding: 12px 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: 600;
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #111827;
-            margin-left: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
 </head>
 <body>
     <div class="box">
         <h1>Aufgabe löschen</h1>
         <p>Möchtest du die Aufgabe <strong>{{ aufgabe.titel }}</strong> wirklich löschen?</p>
 
-        <form method="post">
+        <form method="post" class="delete-form">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Ja, löschen</button>
             <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" class="btn btn-secondary">Abbrechen</a>

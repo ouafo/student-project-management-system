@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
+</head>
+<body>
+    <div class="page">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="top-nav">
+            <div class="tabs">
+                <a href="{% url 'aufgaben:aufgabe_erstellen' %}">Aufgaben</a>
+                <a href="{% url 'aufgaben:kanban_board' %}">Kanban Board</a>
+                <a href="{% url 'aufgaben:chat' %}" class="active">Chat</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">Team Chat</div>
+
+            <div class="chat-comments">
+                {% for nachricht in nachrichten %}
+                    <div class="comment {% if nachricht.sender == request.user %}comment-own{% endif %}">
+                        {% if nachricht.sender != request.user %}
+                            <div class="avatar">
+                                {{ nachricht.sender.username|slice:":2"|upper }}
+                            </div>
+                        {% endif %}
+
+                        <div class="bubble {% if nachricht.sender == request.user %}me{% endif %}">
+                            <div class="meta">
+                                <strong>
+                                    {{ nachricht.sender.get_full_name|default:nachricht.sender.username }}
+                                </strong>
+                                {{ nachricht.erstellt_am|date:"d.m.Y H:i" }}
+                            </div>
+                            <div>{{ nachricht.text }}</div>
+                        </div>
+
+                        {% if nachricht.sender == request.user %}
+                            <div class="avatar">
+                                {{ nachricht.sender.username|slice:":2"|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p class="empty-text">Noch keine Nachrichten vorhanden.</p>
+                {% endfor %}
+            </div>
+
+            <form method="post" class="chat-form-block">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.empfaenger.id_for_label }}">Empfänger</label>
+                    {{ form.empfaenger }}
+                </div>
+
+                <div class="comment-form">
+                    {{ form.text }}
+                    <button type="submit" class="btn btn-primary">Senden</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

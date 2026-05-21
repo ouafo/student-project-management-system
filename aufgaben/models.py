@@ -17,16 +17,8 @@ class Aufgabe(models.Model):
 
     titel = models.CharField(max_length=200)
     beschreibung = models.TextField()
-    status = models.CharField(
-        max_length=30,
-        choices=Status.choices,
-        default=Status.OFFEN
-    )
-    prioritaet = models.CharField(
-        max_length=20,
-        choices=Prioritaet.choices,
-        default=Prioritaet.MITTEL
-    )
+    status = models.CharField(max_length=30, choices=Status.choices, default=Status.OFFEN)
+    prioritaet = models.CharField(max_length=20, choices=Prioritaet.choices, default=Prioritaet.MITTEL)
 
     zugewiesen_an = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -52,15 +44,8 @@ class Aufgabe(models.Model):
 
 
 class Kommentar(models.Model):
-    aufgabe = models.ForeignKey(
-        Aufgabe,
-        on_delete=models.CASCADE,
-        related_name="kommentare"
-    )
-    autor = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
-    )
+    aufgabe = models.ForeignKey(Aufgabe, on_delete=models.CASCADE, related_name="kommentare")
+    autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()
     erstellt_am = models.DateTimeField(auto_now_add=True)
 
@@ -69,3 +54,24 @@ class Kommentar(models.Model):
 
     def __str__(self):
         return f"Kommentar von {self.autor} zu {self.aufgabe}"
+
+
+class ChatNachricht(models.Model):
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="gesendete_chat_nachrichten"
+    )
+    empfaenger = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="erhaltene_chat_nachrichten"
+    )
+    text = models.TextField()
+    erstellt_am = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["erstellt_am"]
+
+    def __str__(self):
+        return f"{self.sender} -> {self.empfaenger}"
