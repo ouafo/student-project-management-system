@@ -1,0 +1,243 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Einstellungen — Boardify</title>
+    <link rel="stylesheet" href="{% static 'einstellung.css' %}">
+</head>
+<body>
+
+{% if messages %}
+<div class="toast-container">
+    {% for message in messages %}
+    <div class="toast {% if message.tags == 'error' %}toast-error{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="main-layout">
+
+    <aside class="sidebar settings-sidebar">
+        <div class="sidebar-header">
+            <h2 class="logo">Boardify</h2>
+            <div class="profil">
+                <div class="avatar"
+                     style="{% if request.user.profile.avatar_bild %}
+                     background-image:url('{{ request.user.profile.avatar_bild.url }}');
+                     {% else %}
+                     background:{{ request.user.profile.avatar_farbe }};
+                     {% endif %}">
+                    {% if not request.user.profile.avatar_bild %}
+                        {{ avatar }}
+                    {% endif %}
+                </div>
+                <div class="user-info">
+                    <strong>{{ vorname }}</strong>
+                    <small>{{ request.user.email }}</small>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'dashboard' %}">Meine Projekte</a>
+                <a href="#">Neues Projekt</a>
+                <a href="{% url 'profil_bearbeiten' %}">Mein Profil</a>
+                <a href="{% url 'einstellungen' %}" class="active">Einstellungen</a>
+            </nav>
+        </div>
+        <div class="sidebar-bottom">
+            <div class="sidebar-item">
+                <img src="{% static 'images/benachrichtigung.png' %}" alt="Benachrichtigung" class="icon">
+                <a href="#">Benachrichtigungen</a>
+            </div>
+            <div class="sidebar-item">
+                <img src="{% static 'images/logout.png' %}" alt="Abmelden" class="icon-logout">
+                <a href="#" class="logout">Abmelden</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="content settings-content">
+
+        <div class="settings-banner">
+            <div class="topbar">
+                <a href="{% url 'dashboard' %}" class="btn-back">
+                    ← Zur Projektsicht
+                </a>
+            </div>
+            <div class="settings-header">
+                <h1>Einstellungen</h1>
+                <p>App-Verhalten, Benachrichtigungen und Sichtbarkeit anpassen</p>
+            </div>
+        </div>
+
+        <form method="POST" class="settings-form">
+            {% csrf_token %}
+
+            <section class="settings-card">
+                <div class="card-head">
+                    <div class="card-icon blue">
+                        <img src="{% static 'images/benachrichtigung.png' %}" alt="" class="card-icon-img">
+                    </div>
+                    <div>
+                        <h2>Benachrichtigungen</h2>
+                        <span>E-Mail-Benachrichtigungen aktivieren oder deaktivieren</span>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <strong>Projekteinladungen</strong>
+                        <p>E-Mail erhalten wenn du zu einem Projekt eingeladen wirst</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="notify_email" {% if profile.notify_email %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <strong>Neue Aufgabe zugewiesen</strong>
+                        <p>E-Mail erhalten wenn dir eine neue Aufgabe zugewiesen wird</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="notify_system" {% if profile.notify_system %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <strong>Projekt abgeschlossen</strong>
+                        <p>E-Mail erhalten wenn ein Projekt den Fortschritt 100% erreicht</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="notify_projekt">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>
+                        <strong>Deadline erreicht</strong>
+                        <p>E-Mail erhalten wenn ein Deadline erreicht wird</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="notify_projekt">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="settings-card">
+                <div class="card-head">
+                    <div class="card-icon purple">
+                        <img src="{% static 'images/paint.png' %}" alt="" class="card-icon-img">
+                    </div>
+                    <div>
+                        <h2>Darstellung</h2>
+                        <span>Sprache und visuelle Einstellungen</span>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <strong>Sprache</strong>
+                        <p>Sprache der Benutzeroberfläche</p>
+                    </div>
+                    <select class="lang-select" name="sprache">
+                        <option value="de" {% if profile.sprache == 'de' %}selected{% endif %}> Deutsch</option>
+                        <option value="en" {% if profile.sprache == 'en' %}selected{% endif %}> English</option>
+                        <option value="fr" {% if profile.sprache == 'fr' %}selected{% endif %}> Français</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <strong>Kompakte Kartenansicht</strong>
+                        <p>Kleinere Projektkarten für mehr Übersicht auf dem Dashboard</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="kompakt_modus" {% if profile.kompakt_modus %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="settings-card">
+                <div class="card-head">
+                    <div class="card-icon green">
+                        <img src="{% static 'images/privacy.png' %}" alt="" class="card-icon-img">
+                    </div>
+                    <div>
+                        <h2>Datenschutz & Sichtbarkeit</h2>
+                        <span>Wer dein Profil und deine Projekte sehen darf</span>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <strong>Profil öffentlich sichtbar</strong>
+                        <p>Andere Nutzer können dein Profil und deine Statistiken sehen</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="profil_oeffentlich" {% if profile.profil_oeffentlich %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <strong>In Teilnehmerlisten auffindbar</strong>
+                        <p>Andere können dich zu ihren Projekten einladen</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="auffindbar" {% if profile.auffindbar %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>
+                        <strong>Projekte öffentlich sichtbar</strong>
+                        <p>Auch Nutzer außerhalb des Projekts können Projektdetails sehen</p>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" name="projekt_oeffentlich">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <strong>Nur Mitgliederzugriff</strong>
+                        <p>Projekte können ausschließlich von Projektmitgliedern geöffnet werden</p>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" name="nur_mitglieder" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </section>
+
+            <div class="save-wrap">
+                <button type="submit" class="save-btn">Einstellungen speichern</button>
+            </div>
+
+        </form>
+    </main>
+</div>
+
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.toast').forEach(t => {
+            t.style.transition = 'opacity 0.5s';
+            t.style.opacity = '0';
+        });
+    }, 4000);
+</script>
+</body>
+</html>

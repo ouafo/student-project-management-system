@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/project_view.css">
+</head>
+<body>
+<div class="bg-shape shape1"></div>
+<div class="bg-shape shape2"></div>
+<div class="bg-shape shape3"></div>
+
+
+    <div class="main-layout">
+        <!-- Der linke Rahmen -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">Boardify</h2>
+                <div class="profil">
+                    <div class="avatar">MS</div>
+                    <div class="user-info">
+                        <strong>Max Schneider</strong>
+                        <small>Max.Schneider.@studmail.hwg-lu.de</small>
+                    </div>
+                </div>
+
+            <nav class="sidebar-menu">
+                <a href="/" class="active">Dashboard</a>
+                <a href="#">Meine Projekte</a>
+                <a href="#">Neues Projekt</a>
+                <a href="#">Mein Profil</a>
+                <a href="#">Einstellungen</a>
+            </nav>
+            </div>
+            <div class="sidebar-bottom">
+                <div class="sidebar-item">
+                    <img src="{% static 'images/benachrichtigung.png' %}" alt="Benachrichtigung" class="icon">
+                    <a href="#">Benachrichtigungen</a>
+                </div>
+
+                <div class="sidebar-item logout-item">
+                    <img src="{% static 'images/logout.png' %}" alt="Abmelden" class="icon">
+                    <a href="#" class="logout">Abmelden</a>
+                </div>
+            </div>
+        </aside>
+        <main class="content">
+        <div class="welcome-banner">
+            <h1> <img src="{% static 'images/hallo.png' %}" alt="Teilnehmer" class="main-icon">
+                Willkommen zurück, Max! </h1>
+            <p> Du hast 6 aktive Projekte und 31 offene Aufgaben.</p>
+        </div>
+        <div class="projects-header">
+        <h2>Meine Projekte</h2>
+        <button class="btn-new-project">+ Neues Projekt</button>
+        </div>
+        <div class="project-grid">
+            <div class="project-card">
+            <h3>Web-Entwicklung Projekt</h3>
+            <p>Entwicklung einer modernen Webanwendung mit React und Node.js</p>
+
+                <div class="card-meta">
+                    <span>
+                        <img src="{% static 'images/benutzer.png' %}" alt="Teilnehmer" class="icon"> 4
+                    </span>
+                    <span>
+                        <img src="{% static 'images/uberprufen.png' %}" alt="Aufgaben" class="icon"> 7/12</span>
+                </div>
+
+                <div class="progress-info">
+                    <span>Fortschritt</span>
+                    <span>58%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 58%;"></div>
+                    </div>
+
+            <button class="btn-open">Öffnen</button>
+            </div>
+        </div>
+            <!-- Hier kommen die anderen Karten mit Backend später -->
+        </main>
+    </div>
+
+
+</body>
+</html>

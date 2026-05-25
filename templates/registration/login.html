@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head><title>Login</title></head>
+<body style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;">
+<form method="POST" style="background:#1e293b;padding:32px;border-radius:12px;color:white;display:flex;flex-direction:column;gap:12px;min-width:300px;">
+    {% csrf_token %}
+    <h2 style="margin:0;color:white;">Boardify Login</h2>
+    {{ form.as_p }}
+    <button type="submit" style="padding:10px;background:#2f6fed;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700;">
+        Einloggen
+    </button>
+</form>
+</body>
+</html>
