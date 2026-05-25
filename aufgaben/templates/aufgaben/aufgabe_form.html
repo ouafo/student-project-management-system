@@ -1,51 +1,88 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ seite_titel }}</title>
-    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
-</head>
-<body>
-    <div class="container">
-        <h1>{{ seite_titel }}</h1>
+{% extends "base.html" %}
 
-        <form method="post">
-            {% csrf_token %}
+{% block title %}{{ seite_titel }}{% endblock %}
 
-            <div class="form-group">
-                <label for="{{ form.titel.id_for_label }}">Titel</label>
-                {{ form.titel }}
+{% block content %}
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <h1 class="sidebar-logo">Boardify</h1>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|slice:":2"|upper }}
             </div>
-
-            <div class="form-group">
-                <label for="{{ form.beschreibung.id_for_label }}">Beschreibung</label>
-                {{ form.beschreibung }}
+            <div>
+                <div class="user-name">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </div>
+                <div class="user-email">{{ request.user.email }}</div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="{{ form.status.id_for_label }}">Status</label>
-                {{ form.status }}
-            </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item">⌂ Dashboard</a>
+            <a href="#" class="nav-item">▭ Meine Projekte</a>
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="nav-item active">⊕ Neue Aufgabe</a>
+            <a href="#" class="nav-item">♙ Mein Profil</a>
+            <a href="#" class="nav-item">⚙ Einstellungen</a>
+        </nav>
 
-            <div class="form-group">
-                <label for="{{ form.prioritaet.id_for_label }}">Priorität</label>
-                {{ form.prioritaet }}
-            </div>
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
+            <a href="{% url 'logout' %}" class="nav-item logout">⇱ Abmelden</a>
+        </div>
+    </aside>
 
-            <div class="form-group">
-                <label for="{{ form.zugewiesen_an.id_for_label }}">Zugewiesen an</label>
-                {{ form.zugewiesen_an }}
-            </div>
+    <main class="main-content">
+        <div class="breadcrumb">
+            <span>Dashboard</span>
+            <span>›</span>
+            <span class="breadcrumb-active">{{ seite_titel }}</span>
+        </div>
 
-            <div class="form-group">
-                <label for="{{ form.deadline.id_for_label }}">Deadline</label>
-                {{ form.deadline }}
-            </div>
+        <div class="card" style="max-width: 820px;">
+            <h1 class="card-title">{{ seite_titel }}</h1>
 
-            <button type="submit" class="btn btn-primary">Speichern</button>
-            <a href="{% url 'aufgaben:kanban_board' %}" class="btn btn-secondary">Abbrechen</a>
-        </form>
-    </div>
-</body>
-</html>
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.titel.id_for_label }}">Titel</label>
+                    {{ form.titel }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.beschreibung.id_for_label }}">Beschreibung</label>
+                    {{ form.beschreibung }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}">Status</label>
+                    {{ form.status }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.prioritaet.id_for_label }}">Priorität</label>
+                    {{ form.prioritaet }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.zugewiesen_an.id_for_label }}">Zugewiesen an</label>
+                    {{ form.zugewiesen_an }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.deadline.id_for_label }}">Deadline</label>
+                    {{ form.deadline }}
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn-primary">Speichern</button>
+                    <a href="{% url 'aufgaben:kanban_board' %}" class="btn-secondary">Abbrechen</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

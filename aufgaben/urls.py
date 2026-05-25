@@ -11,5 +11,4 @@ urlpatterns = [
     path("<int:pk>/bearbeiten/", views.aufgabe_bearbeiten, name="aufgabe_bearbeiten"),
     path("<int:pk>/loeschen/", views.aufgabe_loeschen, name="aufgabe_loeschen"),
     path("<int:pk>/status/", views.aufgabe_status_aktualisieren, name="aufgabe_status_aktualisieren"),
-    path("chat/", views.chat_view, name="chat"),
 ]

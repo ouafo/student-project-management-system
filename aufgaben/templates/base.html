@@ -1,0 +1,12 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Boardify{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
+</head>
+<body>
+    {% block content %}{% endblock %}
+</body>
+</html>

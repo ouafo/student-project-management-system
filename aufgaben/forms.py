@@ -57,7 +57,7 @@ class ChatNachrichtForm(forms.ModelForm):
             "empfaenger": forms.Select(attrs={"class": "form-control"}),
             "text": forms.TextInput(
                 attrs={
-                    "class": "chat-input",
+                    "class": "comment-input",
                     "placeholder": "Nachricht schreiben..."
                 }
             ),
@@ -66,6 +66,5 @@ class ChatNachrichtForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         aktueller_user = kwargs.pop("aktueller_user", None)
         super().__init__(*args, **kwargs)
-
         if aktueller_user is not None:
             self.fields["empfaenger"].queryset = User.objects.exclude(pk=aktueller_user.pk)

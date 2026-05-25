@@ -1,65 +1,85 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Chat</title>
-    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
-</head>
-<body>
-    <div class="page">
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="message">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
+{% extends "base.html" %}
 
-        <div class="top-nav">
-            <div class="tabs">
-                <a href="{% url 'aufgaben:aufgabe_erstellen' %}">Aufgaben</a>
-                <a href="{% url 'aufgaben:kanban_board' %}">Kanban Board</a>
-                <a href="{% url 'aufgaben:chat' %}" class="active">Chat</a>
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <h1 class="sidebar-logo">Boardify</h1>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|slice:":2"|upper }}
+            </div>
+            <div>
+                <div class="user-name">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </div>
+                <div class="user-email">{{ request.user.email }}</div>
             </div>
         </div>
 
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item">⌂ Dashboard</a>
+            <a href="#" class="nav-item">▭ Meine Projekte</a>
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="nav-item">⊕ Neue Aufgabe</a>
+            <a href="#" class="nav-item">♙ Mein Profil</a>
+            <a href="#" class="nav-item">⚙ Einstellungen</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
+            <a href="{% url 'logout' %}" class="nav-item logout">⇱ Abmelden</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="breadcrumb">
+            <span>Dashboard</span>
+            <span>›</span>
+            <span>Web-Entwicklung Projekt</span>
+            <span>›</span>
+            <span class="breadcrumb-active">Chat</span>
+        </div>
+
+        <div class="tabs">
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="tab">Aufgaben</a>
+            <a href="{% url 'aufgaben:kanban_board' %}" class="tab">Kanban Board</a>
+            <a href="{% url 'aufgaben:chat' %}" class="tab active">Chat</a>
+        </div>
+
         <div class="card">
-            <div class="section-title">Team Chat</div>
+            <h2 class="section-title">Team Chat</h2>
 
-            <div class="chat-comments">
-                {% for nachricht in nachrichten %}
-                    <div class="comment {% if nachricht.sender == request.user %}comment-own{% endif %}">
-                        {% if nachricht.sender != request.user %}
-                            <div class="avatar">
-                                {{ nachricht.sender.username|slice:":2"|upper }}
-                            </div>
-                        {% endif %}
-
-                        <div class="bubble {% if nachricht.sender == request.user %}me{% endif %}">
-                            <div class="meta">
-                                <strong>
-                                    {{ nachricht.sender.get_full_name|default:nachricht.sender.username }}
-                                </strong>
-                                {{ nachricht.erstellt_am|date:"d.m.Y H:i" }}
-                            </div>
-                            <div>{{ nachricht.text }}</div>
+            {% for nachricht in nachrichten %}
+                <div class="comment {% if nachricht.sender == request.user %}comment-own{% endif %}">
+                    {% if nachricht.sender != request.user %}
+                        <div class="avatar">
+                            {{ nachricht.sender.username|slice:":2"|upper }}
                         </div>
+                    {% endif %}
 
-                        {% if nachricht.sender == request.user %}
-                            <div class="avatar">
-                                {{ nachricht.sender.username|slice:":2"|upper }}
-                            </div>
-                        {% endif %}
+                    <div class="bubble {% if nachricht.sender == request.user %}me{% endif %}">
+                        <div class="meta">
+                            <strong>{{ nachricht.sender.get_full_name|default:nachricht.sender.username }}</strong>
+                            {{ nachricht.erstellt_am|date:"d.m.Y H:i" }}
+                        </div>
+                        <div>{{ nachricht.text }}</div>
                     </div>
-                {% empty %}
-                    <p class="empty-text">Noch keine Nachrichten vorhanden.</p>
-                {% endfor %}
-            </div>
 
-            <form method="post" class="chat-form-block">
+                    {% if nachricht.sender == request.user %}
+                        <div class="avatar">
+                            {{ nachricht.sender.username|slice:":2"|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p class="empty-text">Noch keine Nachrichten vorhanden.</p>
+            {% endfor %}
+
+            <form method="post" style="margin-top: 24px;">
                 {% csrf_token %}
-
                 <div class="form-group">
                     <label for="{{ form.empfaenger.id_for_label }}">Empfänger</label>
                     {{ form.empfaenger }}
@@ -67,10 +87,10 @@
 
                 <div class="comment-form">
                     {{ form.text }}
-                    <button type="submit" class="btn btn-primary">Senden</button>
+                    <button type="submit" class="btn-primary">Senden</button>
                 </div>
             </form>
         </div>
-    </div>
-</body>
-</html>
+    </main>
+</div>
+{% endblock %}

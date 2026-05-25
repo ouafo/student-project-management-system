@@ -1,237 +1,301 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Kanban Board</title>
-    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
-</head>
-<body>
-    <div class="page">
-        <div class="header">
-            <div class="tabs">
-                <a href="{% url 'aufgaben:aufgabe_erstellen' %}">Aufgaben</a>
-                <a href="{% url 'aufgaben:kanban_board' %}" class="active">Kanban Board</a>
-                <a href="{% url 'aufgaben:chat' %}">Chat</a>
+{% extends "base.html" %}
+
+{% block title %}Kanban Board{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <h1 class="sidebar-logo">Boardify</h1>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|slice:":2"|upper }}
             </div>
-
-            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="btn btn-primary">+ Neue Aufgabe</a>
-        </div>
-
-        <div class="columns">
-            <div class="column" data-status="offen">
-                <h2>Offen</h2>
-                {% for aufgabe in offen %}
-                    <div class="task-card"
-                         draggable="true"
-                         data-task-id="{{ aufgabe.pk }}"
-                         onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
-                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" onclick="event.stopPropagation();">
-                            {{ aufgabe.titel }}
-                        </a>
-
-                        <div class="badge {{ aufgabe.prioritaet }}">
-                            {{ aufgabe.get_prioritaet_display }}
-                        </div>
-
-                        <div class="task-meta">
-                            <span>
-                                {% if aufgabe.deadline %}
-                                    {{ aufgabe.deadline|date:"d.m.Y" }}
-                                {% else %}
-                                    Keine Deadline
-                                {% endif %}
-                            </span>
-
-                            <div class="avatar">
-                                {% if aufgabe.zugewiesen_an %}
-                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
-                                {% else %}
-                                    --
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="empty-text">Keine Aufgaben</p>
-                {% endfor %}
-            </div>
-
-            <div class="column" data-status="in_bearbeitung">
-                <h2>In Bearbeitung</h2>
-                {% for aufgabe in in_bearbeitung %}
-                    <div class="task-card"
-                         draggable="true"
-                         data-task-id="{{ aufgabe.pk }}"
-                         onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
-                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" onclick="event.stopPropagation();">
-                            {{ aufgabe.titel }}
-                        </a>
-
-                        <div class="badge {{ aufgabe.prioritaet }}">
-                            {{ aufgabe.get_prioritaet_display }}
-                        </div>
-
-                        <div class="task-meta">
-                            <span>
-                                {% if aufgabe.deadline %}
-                                    {{ aufgabe.deadline|date:"d.m.Y" }}
-                                {% else %}
-                                    Keine Deadline
-                                {% endif %}
-                            </span>
-
-                            <div class="avatar">
-                                {% if aufgabe.zugewiesen_an %}
-                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
-                                {% else %}
-                                    --
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="empty-text">Keine Aufgaben</p>
-                {% endfor %}
-            </div>
-
-            <div class="column" data-status="in_ueberpruefung">
-                <h2>In Überprüfung</h2>
-                {% for aufgabe in in_ueberpruefung %}
-                    <div class="task-card"
-                         draggable="true"
-                         data-task-id="{{ aufgabe.pk }}"
-                         onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
-                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" onclick="event.stopPropagation();">
-                            {{ aufgabe.titel }}
-                        </a>
-
-                        <div class="badge {{ aufgabe.prioritaet }}">
-                            {{ aufgabe.get_prioritaet_display }}
-                        </div>
-
-                        <div class="task-meta">
-                            <span>
-                                {% if aufgabe.deadline %}
-                                    {{ aufgabe.deadline|date:"d.m.Y" }}
-                                {% else %}
-                                    Keine Deadline
-                                {% endif %}
-                            </span>
-
-                            <div class="avatar">
-                                {% if aufgabe.zugewiesen_an %}
-                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
-                                {% else %}
-                                    --
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="empty-text">Keine Aufgaben</p>
-                {% endfor %}
-            </div>
-
-            <div class="column" data-status="erledigt">
-                <h2>Erledigt</h2>
-                {% for aufgabe in erledigt %}
-                    <div class="task-card"
-                         draggable="true"
-                         data-task-id="{{ aufgabe.pk }}"
-                         onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
-                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" onclick="event.stopPropagation();">
-                            {{ aufgabe.titel }}
-                        </a>
-
-                        <div class="badge {{ aufgabe.prioritaet }}">
-                            {{ aufgabe.get_prioritaet_display }}
-                        </div>
-
-                        <div class="task-meta">
-                            <span>
-                                {% if aufgabe.deadline %}
-                                    {{ aufgabe.deadline|date:"d.m.Y" }}
-                                {% else %}
-                                    Keine Deadline
-                                {% endif %}
-                            </span>
-
-                            <div class="avatar">
-                                {% if aufgabe.zugewiesen_an %}
-                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
-                                {% else %}
-                                    --
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="empty-text">Keine Aufgaben</p>
-                {% endfor %}
+            <div>
+                <div class="user-name">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </div>
+                <div class="user-email">{{ request.user.email }}</div>
             </div>
         </div>
-    </div>
 
-    <script>
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== "") {
-                const cookies = document.cookie.split(";");
-                for (let cookie of cookies) {
-                    cookie = cookie.trim();
-                    if (cookie.startsWith(name + "=")) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">⌂ Dashboard</a>
+            <a href="#" class="nav-item">▭ Meine Projekte</a>
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="nav-item">⊕ Neue Aufgabe</a>
+            <a href="#" class="nav-item">♙ Mein Profil</a>
+            <a href="#" class="nav-item">⚙ Einstellungen</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
+            <a href="{% url 'logout' %}" class="nav-item logout">⇱ Abmelden</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="breadcrumb">
+            <span>Dashboard</span>
+            <span>›</span>
+            <span>Web-Entwicklung Projekt</span>
+            <span>›</span>
+            <span class="breadcrumb-active">Kanban Board</span>
+        </div>
+
+        <div class="tabs">
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="tab">Aufgaben</a>
+            <a href="{% url 'aufgaben:kanban_board' %}" class="tab active">Kanban Board</a>
+            <a href="{% url 'aufgaben:chat' %}" class="tab">Chat</a>
+        </div>
+
+        <div class="kanban-header">
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="btn-primary">+ Neue Aufgabe</a>
+        </div>
+
+        <div class="kanban-board">
+
+            <div class="kanban-spalte">
+                <div class="spalte-header">
+                    <h3>Offen</h3>
+                    <span class="spalte-count">{{ offen|length }}</span>
+                </div>
+
+                <div class="spalte-inhalt" data-status="offen">
+                    {% for aufgabe in offen %}
+                        <div class="aufgabe-karte"
+                             draggable="true"
+                             data-task-id="{{ aufgabe.pk }}"
+                             onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
+                            <div class="drag-handle">⋮⋮</div>
+                            <div class="aufgabe-titel">{{ aufgabe.titel }}</div>
+
+                            <div class="prioritaet-badge prioritaet-{{ aufgabe.prioritaet }}">
+                                {{ aufgabe.get_prioritaet_display }}
+                            </div>
+
+                            <div class="aufgabe-footer">
+                                <div class="deadline">
+                                    {% if aufgabe.deadline %}
+                                        {{ aufgabe.deadline|date:"d.m.Y" }}
+                                    {% else %}
+                                        Keine Deadline
+                                    {% endif %}
+                                </div>
+
+                                <div class="aufgabe-avatar {% if not aufgabe.zugewiesen_an %}leer{% endif %}">
+                                    {% if aufgabe.zugewiesen_an %}
+                                        {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="empty-spalte">Keine Aufgaben</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="kanban-spalte">
+                <div class="spalte-header">
+                    <h3>In Bearbeitung</h3>
+                    <span class="spalte-count warning">{{ in_bearbeitung|length }}</span>
+                </div>
+
+                <div class="spalte-inhalt" data-status="in_bearbeitung">
+                    {% for aufgabe in in_bearbeitung %}
+                        <div class="aufgabe-karte"
+                             draggable="true"
+                             data-task-id="{{ aufgabe.pk }}"
+                             onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
+                            <div class="drag-handle">⋮⋮</div>
+                            <div class="aufgabe-titel">{{ aufgabe.titel }}</div>
+
+                            <div class="prioritaet-badge prioritaet-{{ aufgabe.prioritaet }}">
+                                {{ aufgabe.get_prioritaet_display }}
+                            </div>
+
+                            <div class="aufgabe-footer">
+                                <div class="deadline">
+                                    {% if aufgabe.deadline %}
+                                        {{ aufgabe.deadline|date:"d.m.Y" }}
+                                    {% else %}
+                                        Keine Deadline
+                                    {% endif %}
+                                </div>
+
+                                <div class="aufgabe-avatar {% if not aufgabe.zugewiesen_an %}leer{% endif %}">
+                                    {% if aufgabe.zugewiesen_an %}
+                                        {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="empty-spalte">Keine Aufgaben</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="kanban-spalte">
+                <div class="spalte-header">
+                    <h3>In Überprüfung</h3>
+                    <span class="spalte-count orange">{{ in_ueberpruefung|length }}</span>
+                </div>
+
+                <div class="spalte-inhalt" data-status="in_ueberpruefung">
+                    {% for aufgabe in in_ueberpruefung %}
+                        <div class="aufgabe-karte"
+                             draggable="true"
+                             data-task-id="{{ aufgabe.pk }}"
+                             onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
+                            <div class="drag-handle">⋮⋮</div>
+                            <div class="aufgabe-titel">{{ aufgabe.titel }}</div>
+
+                            <div class="prioritaet-badge prioritaet-{{ aufgabe.prioritaet }}">
+                                {{ aufgabe.get_prioritaet_display }}
+                            </div>
+
+                            <div class="aufgabe-footer">
+                                <div class="deadline">
+                                    {% if aufgabe.deadline %}
+                                        {{ aufgabe.deadline|date:"d.m.Y" }}
+                                    {% else %}
+                                        Keine Deadline
+                                    {% endif %}
+                                </div>
+
+                                <div class="aufgabe-avatar {% if not aufgabe.zugewiesen_an %}leer{% endif %}">
+                                    {% if aufgabe.zugewiesen_an %}
+                                        {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="empty-spalte">Keine Aufgaben</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="kanban-spalte">
+                <div class="spalte-header">
+                    <h3>Erledigt</h3>
+                    <span class="spalte-count success">{{ erledigt|length }}</span>
+                </div>
+
+                <div class="spalte-inhalt" data-status="erledigt">
+                    {% for aufgabe in erledigt %}
+                        <div class="aufgabe-karte"
+                             draggable="true"
+                             data-task-id="{{ aufgabe.pk }}"
+                             onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
+                            <div class="drag-handle">⋮⋮</div>
+                            <div class="aufgabe-titel">{{ aufgabe.titel }}</div>
+
+                            <div class="prioritaet-badge prioritaet-{{ aufgabe.prioritaet }}">
+                                {{ aufgabe.get_prioritaet_display }}
+                            </div>
+
+                            <div class="aufgabe-footer">
+                                <div class="deadline">
+                                    {% if aufgabe.deadline %}
+                                        {{ aufgabe.deadline|date:"d.m.Y" }}
+                                    {% else %}
+                                        Keine Deadline
+                                    {% endif %}
+                                </div>
+
+                                <div class="aufgabe-avatar {% if not aufgabe.zugewiesen_an %}leer{% endif %}">
+                                    {% if aufgabe.zugewiesen_an %}
+                                        {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="empty-spalte">Keine Aufgaben</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
+        return cookieValue;
+    }
 
-        const csrftoken = getCookie("csrftoken");
-        const taskCards = document.querySelectorAll(".task-card");
-        const columns = document.querySelectorAll(".column");
+    const csrftoken = getCookie("csrftoken");
+    const cards = document.querySelectorAll(".aufgabe-karte");
+    const columns = document.querySelectorAll(".spalte-inhalt");
 
-        taskCards.forEach((card) => {
-            card.addEventListener("dragstart", (event) => {
-                event.dataTransfer.setData("taskId", card.dataset.taskId);
-            });
+    cards.forEach((card) => {
+        card.addEventListener("dragstart", (event) => {
+            event.dataTransfer.setData("taskId", card.dataset.taskId);
+            card.classList.add("karte-drag");
         });
 
-        columns.forEach((column) => {
-            column.addEventListener("dragover", (event) => {
-                event.preventDefault();
-            });
-
-            column.addEventListener("drop", async (event) => {
-                event.preventDefault();
-
-                const taskId = event.dataTransfer.getData("taskId");
-                const newStatus = column.dataset.status;
-
-                try {
-                    const response = await fetch(`/aufgaben/${taskId}/status/`, {
-                        method: "POST",
-                        headers: {
-                            "X-CSRFToken": csrftoken,
-                            "Content-Type": "application/x-www-form-urlencoded",
-                        },
-                        body: new URLSearchParams({
-                            status: newStatus
-                        })
-                    });
-
-                    if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        alert("Status konnte nicht aktualisiert werden.");
-                    }
-                } catch (error) {
-                    alert("Beim Verschieben ist ein Fehler aufgetreten.");
-                }
-            });
+        card.addEventListener("dragend", () => {
+            card.classList.remove("karte-drag");
         });
-    </script>
-</body>
-</html>
+    });
+
+    columns.forEach((column) => {
+        column.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            column.classList.add("sortable-over");
+        });
+
+        column.addEventListener("dragleave", () => {
+            column.classList.remove("sortable-over");
+        });
+
+        column.addEventListener("drop", async (event) => {
+            event.preventDefault();
+            column.classList.remove("sortable-over");
+
+            const taskId = event.dataTransfer.getData("taskId");
+            const newStatus = column.dataset.status;
+
+            const response = await fetch(`/aufgaben/${taskId}/status/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrftoken,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    status: newStatus
+                })
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Status konnte nicht aktualisiert werden.");
+            }
+        });
+    });
+</script>
+{% endblock %}

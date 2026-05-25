@@ -1,21 +1,56 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Aufgabe löschen</title>
-    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
-</head>
-<body>
-    <div class="box">
-        <h1>Aufgabe löschen</h1>
-        <p>Möchtest du die Aufgabe <strong>{{ aufgabe.titel }}</strong> wirklich löschen?</p>
+{% extends "base.html" %}
 
-        <form method="post" class="delete-form">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Ja, löschen</button>
-            <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" class="btn btn-secondary">Abbrechen</a>
-        </form>
-    </div>
-</body>
-</html>
+{% block title %}Aufgabe löschen{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <h1 class="sidebar-logo">Boardify</h1>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|slice:":2"|upper }}
+            </div>
+            <div>
+                <div class="user-name">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </div>
+                <div class="user-email">{{ request.user.email }}</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item">⌂ Dashboard</a>
+            <a href="#" class="nav-item">▭ Meine Projekte</a>
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="nav-item">⊕ Neue Aufgabe</a>
+            <a href="#" class="nav-item">♙ Mein Profil</a>
+            <a href="#" class="nav-item">⚙ Einstellungen</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
+            <a href="{% url 'logout' %}" class="nav-item logout">⇱ Abmelden</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="breadcrumb">
+            <span>Dashboard</span>
+            <span>›</span>
+            <span class="breadcrumb-active">Aufgabe löschen</span>
+        </div>
+
+        <div class="card" style="max-width: 620px;">
+            <h1 class="card-title">Aufgabe löschen</h1>
+            <p>Möchtest du die Aufgabe <strong>{{ aufgabe.titel }}</strong> wirklich löschen?</p>
+
+            <form method="post" class="actions" style="margin-top: 24px;">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger">Ja, löschen</button>
+                <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" class="btn-secondary">Abbrechen</a>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

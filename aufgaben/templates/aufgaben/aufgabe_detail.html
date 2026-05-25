@@ -1,41 +1,74 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ aufgabe.titel }}</title>
-    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
-</head>
-<body>
-    <div class="page">
+{% extends "base.html" %}
+
+{% block title %}{{ aufgabe.titel }}{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <h1 class="sidebar-logo">Boardify</h1>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|slice:":2"|upper }}
+            </div>
+            <div>
+                <div class="user-name">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </div>
+                <div class="user-email">{{ request.user.email }}</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item">⌂ Dashboard</a>
+            <a href="#" class="nav-item">▭ Meine Projekte</a>
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="nav-item">⊕ Neue Aufgabe</a>
+            <a href="#" class="nav-item">♙ Mein Profil</a>
+            <a href="#" class="nav-item">⚙ Einstellungen</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
+            <a href="{% url 'logout' %}" class="nav-item logout">⇱ Abmelden</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="breadcrumb">
+            <span>Dashboard</span>
+            <span>›</span>
+            <span>Web-Entwicklung Projekt</span>
+            <span>›</span>
+            <span class="breadcrumb-active">{{ aufgabe.titel }}</span>
+        </div>
+
+        <div class="tabs">
+            <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" class="tab active">Aufgaben</a>
+            <a href="{% url 'aufgaben:kanban_board' %}" class="tab">Kanban Board</a>
+            <a href="{% url 'aufgaben:chat' %}" class="tab">Chat</a>
+        </div>
+
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
-                    <div class="message">{{ message }}</div>
+                    <div class="message info">{{ message }}</div>
                 {% endfor %}
             </div>
         {% endif %}
 
-        <div class="top-nav">
-            <div class="tabs">
-                <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" class="active">Aufgaben</a>
-                <a href="{% url 'aufgaben:kanban_board' %}">Kanban Board</a>
-                <a href="#">Chat</a>
-            </div>
-        </div>
-
-        <div class="layout">
+        <div class="detail-layout">
             <div>
                 <div class="card">
-                    <div class="title">{{ aufgabe.titel }}</div>
+                    <h1 class="card-title">{{ aufgabe.titel }}</h1>
                     <div class="description">{{ aufgabe.beschreibung }}</div>
                 </div>
 
                 <div class="card">
-                    <div class="section-title">Kommentare ({{ kommentare|length }})</div>
+                    <h2 class="section-title">Kommentare ({{ kommentare|length }})</h2>
 
                     {% for kommentar in kommentare %}
-                        <div class="comment">
+                        <div class="comment {% if kommentar.autor == request.user %}comment-own{% endif %}">
                             <div class="avatar">
                                 {{ kommentar.autor.username|slice:":2"|upper }}
                             </div>
@@ -49,27 +82,27 @@
                             </div>
                         </div>
                     {% empty %}
-                        <p>Noch keine Kommentare vorhanden.</p>
+                        <p class="empty-text">Noch keine Kommentare vorhanden.</p>
                     {% endfor %}
 
                     <form method="post" class="comment-form">
                         {% csrf_token %}
                         {{ kommentar_form.text }}
-                        <button type="submit" name="kommentar_absenden" class="btn btn-primary">Senden</button>
+                        <button type="submit" name="kommentar_absenden" class="btn-primary">Senden</button>
                     </form>
                 </div>
             </div>
 
             <div>
                 <div class="card">
-                    <div class="section-title">Details</div>
+                    <h2 class="section-title">Details</h2>
 
                     <div class="detail-item">
                         <div class="detail-label">Status</div>
                         <form method="post">
                             {% csrf_token %}
                             {{ status_form.status }}
-                            <button type="submit" name="status_speichern" class="btn btn-primary status-save-btn">
+                            <button type="submit" name="status_speichern" class="btn-primary" style="margin-top:10px;">
                                 Speichern
                             </button>
                         </form>
@@ -77,7 +110,9 @@
 
                     <div class="detail-item">
                         <div class="detail-label">Priorität</div>
-                        <span class="badge {{ aufgabe.prioritaet }}">{{ aufgabe.get_prioritaet_display }}</span>
+                        <span class="prioritaet-badge prioritaet-{{ aufgabe.prioritaet }}">
+                            {{ aufgabe.get_prioritaet_display }}
+                        </span>
                     </div>
 
                     <div class="detail-item">
@@ -113,12 +148,12 @@
                     </div>
 
                     <div class="actions">
-                        <a href="{% url 'aufgaben:aufgabe_bearbeiten' aufgabe.pk %}" class="btn btn-primary">Bearbeiten</a>
-                        <a href="{% url 'aufgaben:aufgabe_loeschen' aufgabe.pk %}" class="btn btn-danger">Löschen</a>
+                        <a href="{% url 'aufgaben:aufgabe_bearbeiten' aufgabe.pk %}" class="btn-primary">Bearbeiten</a>
+                        <a href="{% url 'aufgaben:aufgabe_loeschen' aufgabe.pk %}" class="btn-danger">Löschen</a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</body>
-</html>
+    </main>
+</div>
+{% endblock %}

@@ -12,21 +12,10 @@ from .models import Aufgabe, ChatNachricht
 @login_required
 def kanban_board(request):
     context = {
-        "offen": Aufgabe.objects.filter(
-            status=Aufgabe.Status.OFFEN
-        ).select_related("zugewiesen_an"),
-
-        "in_bearbeitung": Aufgabe.objects.filter(
-            status=Aufgabe.Status.IN_BEARBEITUNG
-        ).select_related("zugewiesen_an"),
-
-        "in_ueberpruefung": Aufgabe.objects.filter(
-            status=Aufgabe.Status.IN_UEBERPRUEFUNG
-        ).select_related("zugewiesen_an"),
-
-        "erledigt": Aufgabe.objects.filter(
-            status=Aufgabe.Status.ERLEDIGT
-        ).select_related("zugewiesen_an"),
+        "offen": Aufgabe.objects.filter(status=Aufgabe.Status.OFFEN).select_related("zugewiesen_an"),
+        "in_bearbeitung": Aufgabe.objects.filter(status=Aufgabe.Status.IN_BEARBEITUNG).select_related("zugewiesen_an"),
+        "in_ueberpruefung": Aufgabe.objects.filter(status=Aufgabe.Status.IN_UEBERPRUEFUNG).select_related("zugewiesen_an"),
+        "erledigt": Aufgabe.objects.filter(status=Aufgabe.Status.ERLEDIGT).select_related("zugewiesen_an"),
     }
     return render(request, "aufgaben/kanban_board.html", context)
 
@@ -34,10 +23,7 @@ def kanban_board(request):
 @login_required
 def aufgabe_detail(request, pk):
     aufgabe = get_object_or_404(
-        Aufgabe.objects.select_related(
-            "zugewiesen_an",
-            "erstellt_von"
-        ).prefetch_related("kommentare__autor"),
+        Aufgabe.objects.select_related("zugewiesen_an", "erstellt_von").prefetch_related("kommentare__autor"),
         pk=pk
     )
 
@@ -84,11 +70,7 @@ def aufgabe_erstellen(request):
     else:
         form = AufgabeForm()
 
-    context = {
-        "form": form,
-        "seite_titel": "Neue Aufgabe",
-    }
-    return render(request, "aufgaben/aufgabe_form.html", context)
+    return render(request, "aufgaben/aufgabe_form.html", {"form": form, "seite_titel": "Neue Aufgabe"})
 
 
 @login_required
@@ -104,11 +86,7 @@ def aufgabe_bearbeiten(request, pk):
     else:
         form = AufgabeForm(instance=aufgabe)
 
-    context = {
-        "form": form,
-        "seite_titel": "Aufgabe bearbeiten",
-    }
-    return render(request, "aufgaben/aufgabe_form.html", context)
+    return render(request, "aufgaben/aufgabe_form.html", {"form": form, "seite_titel": "Aufgabe bearbeiten"})
 
 
 @login_required
@@ -120,11 +98,7 @@ def aufgabe_loeschen(request, pk):
         messages.success(request, "Aufgabe wurde gelöscht.")
         return redirect("aufgaben:kanban_board")
 
-    return render(
-        request,
-        "aufgaben/aufgabe_confirm_delete.html",
-        {"aufgabe": aufgabe}
-    )
+    return render(request, "aufgaben/aufgabe_confirm_delete.html", {"aufgabe": aufgabe})
 
 
 @login_required
@@ -141,14 +115,10 @@ def aufgabe_status_aktualisieren(request, pk):
     }
 
     if neuer_status not in erlaubte_status:
-        return JsonResponse(
-            {"success": False, "error": "Ungültiger Status."},
-            status=400
-        )
+        return JsonResponse({"success": False}, status=400)
 
     aufgabe.status = neuer_status
     aufgabe.save(update_fields=["status"])
-
     return JsonResponse({"success": True})
 
 
