@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ seite_titel }}</title>
+    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ seite_titel }}</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.titel.id_for_label }}">Titel</label>
+                {{ form.titel }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.beschreibung.id_for_label }}">Beschreibung</label>
+                {{ form.beschreibung }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Status</label>
+                {{ form.status }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.prioritaet.id_for_label }}">Priorität</label>
+                {{ form.prioritaet }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.zugewiesen_an.id_for_label }}">Zugewiesen an</label>
+                {{ form.zugewiesen_an }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.deadline.id_for_label }}">Deadline</label>
+                {{ form.deadline }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Speichern</button>
+            <a href="{% url 'aufgaben:kanban_board' %}" class="btn btn-secondary">Abbrechen</a>
+        </form>
+    </div>
+</body>
+</html>

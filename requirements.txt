@@ -1,8 +1,1 @@
-#Hier alle Pip Installationen sammeln
-django==6.0.4
-pillow==12.2.0
-psycopg-binary==3.3.3
-python-dotenv==1.2.2
-sqlparse==0.5.5
-tzdata==2026.2
-psycopg2-binary # Python paket as SQL-Adapter, damit django beim start die PostgreSQL-Engine lädt
+#Hier alle Pip Installationen!

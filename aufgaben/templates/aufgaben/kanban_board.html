@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Kanban Board</title>
+    <link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div class="tabs">
+                <a href="{% url 'aufgaben:aufgabe_erstellen' %}">Aufgaben</a>
+                <a href="{% url 'aufgaben:kanban_board' %}" class="active">Kanban Board</a>
+                <a href="{% url 'aufgaben:chat' %}">Chat</a>
+            </div>
+
+            <a href="{% url 'aufgaben:aufgabe_erstellen' %}" class="btn btn-primary">+ Neue Aufgabe</a>
+        </div>
+
+        <div class="columns">
+            <div class="column" data-status="offen">
+                <h2>Offen</h2>
+                {% for aufgabe in offen %}
+                    <div class="task-card"
+                         draggable="true"
+                         data-task-id="{{ aufgabe.pk }}"
+                         onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
+                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" onclick="event.stopPropagation();">
+                            {{ aufgabe.titel }}
+                        </a>
+
+                        <div class="badge {{ aufgabe.prioritaet }}">
+                            {{ aufgabe.get_prioritaet_display }}
+                        </div>
+
+                        <div class="task-meta">
+                            <span>
+                                {% if aufgabe.deadline %}
+                                    {{ aufgabe.deadline|date:"d.m.Y" }}
+                                {% else %}
+                                    Keine Deadline
+                                {% endif %}
+                            </span>
+
+                            <div class="avatar">
+                                {% if aufgabe.zugewiesen_an %}
+                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="empty-text">Keine Aufgaben</p>
+                {% endfor %}
+            </div>
+
+            <div class="column" data-status="in_bearbeitung">
+                <h2>In Bearbeitung</h2>
+                {% for aufgabe in in_bearbeitung %}
+                    <div class="task-card"
+                         draggable="true"
+                         data-task-id="{{ aufgabe.pk }}"
+                         onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
+                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" onclick="event.stopPropagation();">
+                            {{ aufgabe.titel }}
+                        </a>
+
+                        <div class="badge {{ aufgabe.prioritaet }}">
+                            {{ aufgabe.get_prioritaet_display }}
+                        </div>
+
+                        <div class="task-meta">
+                            <span>
+                                {% if aufgabe.deadline %}
+                                    {{ aufgabe.deadline|date:"d.m.Y" }}
+                                {% else %}
+                                    Keine Deadline
+                                {% endif %}
+                            </span>
+
+                            <div class="avatar">
+                                {% if aufgabe.zugewiesen_an %}
+                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="empty-text">Keine Aufgaben</p>
+                {% endfor %}
+            </div>
+
+            <div class="column" data-status="in_ueberpruefung">
+                <h2>In Überprüfung</h2>
+                {% for aufgabe in in_ueberpruefung %}
+                    <div class="task-card"
+                         draggable="true"
+                         data-task-id="{{ aufgabe.pk }}"
+                         onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
+                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" onclick="event.stopPropagation();">
+                            {{ aufgabe.titel }}
+                        </a>
+
+                        <div class="badge {{ aufgabe.prioritaet }}">
+                            {{ aufgabe.get_prioritaet_display }}
+                        </div>
+
+                        <div class="task-meta">
+                            <span>
+                                {% if aufgabe.deadline %}
+                                    {{ aufgabe.deadline|date:"d.m.Y" }}
+                                {% else %}
+                                    Keine Deadline
+                                {% endif %}
+                            </span>
+
+                            <div class="avatar">
+                                {% if aufgabe.zugewiesen_an %}
+                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="empty-text">Keine Aufgaben</p>
+                {% endfor %}
+            </div>
+
+            <div class="column" data-status="erledigt">
+                <h2>Erledigt</h2>
+                {% for aufgabe in erledigt %}
+                    <div class="task-card"
+                         draggable="true"
+                         data-task-id="{{ aufgabe.pk }}"
+                         onclick="window.location.href='{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}'">
+                        <a href="{% url 'aufgaben:aufgabe_detail' aufgabe.pk %}" onclick="event.stopPropagation();">
+                            {{ aufgabe.titel }}
+                        </a>
+
+                        <div class="badge {{ aufgabe.prioritaet }}">
+                            {{ aufgabe.get_prioritaet_display }}
+                        </div>
+
+                        <div class="task-meta">
+                            <span>
+                                {% if aufgabe.deadline %}
+                                    {{ aufgabe.deadline|date:"d.m.Y" }}
+                                {% else %}
+                                    Keine Deadline
+                                {% endif %}
+                            </span>
+
+                            <div class="avatar">
+                                {% if aufgabe.zugewiesen_an %}
+                                    {{ aufgabe.zugewiesen_an.username|slice:":2"|upper }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="empty-text">Keine Aufgaben</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie("csrftoken");
+        const taskCards = document.querySelectorAll(".task-card");
+        const columns = document.querySelectorAll(".column");
+
+        taskCards.forEach((card) => {
+            card.addEventListener("dragstart", (event) => {
+                event.dataTransfer.setData("taskId", card.dataset.taskId);
+            });
+        });
+
+        columns.forEach((column) => {
+            column.addEventListener("dragover", (event) => {
+                event.preventDefault();
+            });
+
+            column.addEventListener("drop", async (event) => {
+                event.preventDefault();
+
+                const taskId = event.dataTransfer.getData("taskId");
+                const newStatus = column.dataset.status;
+
+                try {
+                    const response = await fetch(`/aufgaben/${taskId}/status/`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": csrftoken,
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: new URLSearchParams({
+                            status: newStatus
+                        })
+                    });
+
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert("Status konnte nicht aktualisiert werden.");
+                    }
+                } catch (error) {
+                    alert("Beim Verschieben ist ein Fehler aufgetreten.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
