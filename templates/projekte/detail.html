@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block titel %}{{ projekt.name }} — Aufgaben{% endblock %}
+
+{% block inhalt %}
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <!--
+    <aside class="sidebar">
+        <div class="sidebar-logo">Boardify</div>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|first|upper }}
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ request.user.username }}</p>
+                <p class="user-email">{{ request.user.email }}</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                🏠 Dashboard
+            </a>
+            <a href="{% url 'projekt_liste' %}" class="nav-item active">
+                📁 Meine Projekte
+            </a>
+            <a href="#" class="nav-item">
+                ➕ Neues Projekt
+            </a>
+            <a href="#" class="nav-item">
+                👤 Mein Profil
+            </a>
+            <a href="#" class="nav-item">
+                ⚙️ Einstellungen
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">
+                🔔 Benachrichtigungen
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                → Abmelden
+            </a>
+        </div>
+    </aside>
+-->
+    <!-- Hauptinhalt -->
+    <main class="main-content">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <span>›</span>
+            <span class="breadcrumb-active">{{ projekt.name }}</span>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <a href="{% url 'projekt_detail' projekt.id %}"
+               class="tab active">
+                Aufgaben
+            </a>
+            <a href="{% url 'kanban_board' projekt.id %}"
+               class="tab">
+                Kanban Board
+            </a>
+            <a href="#" class="tab">Chat</a>
+        </div>
+
+        <!-- Statistiken -->
+        <div class="aufgaben-stats">
+            <div class="stat-karte">
+                <span class="stat-zahl">{{ gesamt }}</span>
+                <span class="stat-label">Gesamt</span>
+            </div>
+            <div class="stat-karte">
+                <span class="stat-zahl blau">{{ offen }}</span>
+                <span class="stat-label">Offen</span>
+            </div>
+            <div class="stat-karte">
+                <span class="stat-zahl orange">
+                    {{ in_bearbeitung }}
+                </span>
+                <span class="stat-label">In Bearbeitung</span>
+            </div>
+            <div class="stat-karte">
+                <span class="stat-zahl gelb">
+                    {{ in_ueberpruefung }}
+                </span>
+                <span class="stat-label">In Überprüfung</span>
+            </div>
+            <div class="stat-karte">
+                <span class="stat-zahl gruen">{{ erledigt }}</span>
+                <span class="stat-label">Erledigt</span>
+            </div>
+        </div>
+
+        <!-- Aufgaben Header -->
+        <div class="projekte-header">
+            <h2>Aufgaben ({{ gesamt }})</h2>
+            <a href="#" class="btn-primary">+ Neue Aufgabe</a>
+        </div>
+
+        <!-- Aufgaben Tabelle -->
+        {% if aufgaben %}
+        <div class="aufgaben-tabelle">
+
+            <!-- Tabellen Header -->
+            <div class="tabelle-header">
+                <div class="col-titel">Titel</div>
+                <div class="col-status">Status</div>
+                <div class="col-prioritaet">Priorität</div>
+                <div class="col-zugewiesen">Zugewiesen an</div>
+                <div class="col-deadline">Deadline</div>
+            </div>
+
+            <!-- Aufgaben Zeilen -->
+            {% for aufgabe in aufgaben %}
+            <div class="tabelle-zeile">
+
+                <!-- Titel -->
+                <div class="col-titel">
+                    <a href="#"
+                       class="aufgabe-link">
+                        {{ aufgabe.titel }}
+                    </a>
+                </div>
+
+                <!-- Status -->
+                <div class="col-status">
+                    <span class="status-badge status-{{ aufgabe.status }}">
+                        {{ aufgabe.get_status_display }}
+                    </span>
+                </div>
+
+                <!-- Priorität -->
+                <div class="col-prioritaet">
+                    <span class="prioritaet-badge 
+                                 prioritaet-{{ aufgabe.prioritaet }}">
+                        {{ aufgabe.get_prioritaet_display }}
+                    </span>
+                </div>
+
+                <!-- Zugewiesen an -->
+                <div class="col-zugewiesen">
+                    {% if aufgabe.zugewiesen_an %}
+                        <div class="zugewiesen-user">
+                            <div class="aufgabe-avatar small">
+                                {{ aufgabe.zugewiesen_an.username|first|upper }}
+                            </div>
+                            <span>{{ aufgabe.zugewiesen_an.username }}</span>
+                        </div>
+                    {% else %}
+                        <span class="nicht-zugewiesen">
+                            Nicht zugewiesen
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Deadline -->
+                <div class="col-deadline">
+                    {% if aufgabe.deadline %}
+                        <span class="deadline
+                            {% if aufgabe.status != 'erledigt' %}
+                                {% now "Y-m-d" as heute %}
+                                {% if aufgabe.deadline|date:"Y-m-d" < heute %}
+                                    deadline-ueberfaellig
+                                {% endif %}
+                            {% endif %}">
+                            📅 {{ aufgabe.deadline|date:"j.n.Y" }}
+                        </span>
+                    {% else %}
+                        <span class="nicht-zugewiesen">—</span>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+        <!-- Leerer Zustand -->
+        <div class="empty-state">
+            <p>📋</p>
+            <p>Noch keine Aufgaben vorhanden.</p>
+            <p>Erstelle die erste Aufgabe für dieses Projekt!</p>
+            <a href="#" class="btn-primary">
+                + Neue Aufgabe erstellen
+            </a>
+        </div>
+        {% endif %}
+
+    </main>
+</div>
+{% endblock %}

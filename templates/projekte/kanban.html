@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+
+{% block titel %}{{ projekt.name }} — Kanban Board{% endblock %}
+
+{% block inhalt %}
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <!--
+    <aside class="sidebar">
+        <div class="sidebar-logo">Boardify</div>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|first|upper }}
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ request.user.username }}</p>
+                <p class="user-email">{{ request.user.email }}</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                🏠 Dashboard
+            </a>
+            <a href="{% url 'projekt_liste' %}" class="nav-item">
+                📁 Meine Projekte
+            </a>
+            <a href="#" class="nav-item">
+                ➕ Neues Projekt
+            </a>
+            <a href="#" class="nav-item">
+                👤 Mein Profil
+            </a>
+            <a href="#" class="nav-item">
+                ⚙️ Einstellungen
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">
+                🔔 Benachrichtigungen
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                → Abmelden
+            </a>
+        </div>
+    </aside>
+-->
+    <!-- Hauptinhalt -->
+    <main class="main-content">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <span>›</span>
+            <a href="{% url 'projekt_detail' projekt.id %}">
+                {{ projekt.name }}
+            </a>
+            <span>›</span>
+            <span class="breadcrumb-active">Kanban Board</span>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <a href="{% url 'projekt_detail' projekt.id %}"
+               class="tab">
+                Aufgaben
+            </a>
+            <a href="{% url 'kanban_board' projekt.id %}"
+               class="tab active">
+                Kanban Board
+            </a>
+            <a href="#" class="tab">Chat</a>
+        </div>
+
+        <!-- Neue Aufgabe Button -->
+        <div class="kanban-header">
+            <a href="#" class="btn-primary">+ Neue Aufgabe</a>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="kanban-board">
+
+            <!-- Spalte: Offen -->
+            <div class="kanban-spalte">
+                <div class="spalte-header">
+                    <h3>Offen</h3>
+                    <span class="spalte-count" id="count-offen">
+                        {{ offen.count }}
+                    </span>
+                </div>
+                <div class="spalte-inhalt"
+                     id="spalte-offen"
+                     data-status="offen">
+                    {% for aufgabe in offen %}
+                        {% include 'projekte/aufgabe_karte.html' %}
+                    {% empty %}
+                        <div class="empty-spalte">
+                            Keine Aufgaben
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Spalte: In Bearbeitung -->
+            <div class="kanban-spalte">
+                <div class="spalte-header">
+                    <h3>In Bearbeitung</h3>
+                    <span class="spalte-count warning"
+                          id="count-in_bearbeitung">
+                        {{ in_bearbeitung.count }}
+                    </span>
+                </div>
+                <div class="spalte-inhalt"
+                     id="spalte-in_bearbeitung"
+                     data-status="in_bearbeitung">
+                    {% for aufgabe in in_bearbeitung %}
+                        {% include 'projekte/aufgabe_karte.html' %}
+                    {% empty %}
+                        <div class="empty-spalte">
+                            Keine Aufgaben
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Spalte: In Überprüfung -->
+            <div class="kanban-spalte">
+                <div class="spalte-header">
+                    <h3>In Überprüfung</h3>
+                    <span class="spalte-count orange"
+                          id="count-in_ueberpruefung">
+                        {{ in_ueberpruefung.count }}
+                    </span>
+                </div>
+                <div class="spalte-inhalt"
+                     id="spalte-in_ueberpruefung"
+                     data-status="in_ueberpruefung">
+                    {% for aufgabe in in_ueberpruefung %}
+                        {% include 'projekte/aufgabe_karte.html' %}
+                    {% empty %}
+                        <div class="empty-spalte">
+                            Keine Aufgaben
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Spalte: Erledigt -->
+            <div class="kanban-spalte">
+                <div class="spalte-header">
+                    <h3>Erledigt</h3>
+                    <span class="spalte-count success"
+                          id="count-erledigt">
+                        {{ erledigt.count }}
+                    </span>
+                </div>
+                <div class="spalte-inhalt"
+                     id="spalte-erledigt"
+                     data-status="erledigt">
+                    {% for aufgabe in erledigt %}
+                        {% include 'projekte/aufgabe_karte.html' %}
+                    {% empty %}
+                        <div class="empty-spalte">
+                            Keine Aufgaben
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- SortableJS Library -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<!-- Drag & Drop JavaScript -->
+<script>
+    // CSRF Token für Django holen
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(
+                        cookie.substring(name.length + 1)
+                    );
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Status Update an Django senden
+    function statusUpdate(aufgabeId, neuerStatus) {
+        fetch(`/projekte/aufgabe/${aufgabeId}/status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                status: neuerStatus
+            })
+        })
+        .then(response => response.json())
+        .then(daten => {
+            if (daten.success) {
+                console.log('✅ Status aktualisiert:', neuerStatus);
+                // Spalten Anzahl aktualisieren
+                aktualisiereSpaltenAnzahl();
+            } else {
+                console.error('❌ Fehler:', daten.error);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Netzwerk Fehler:', error);
+        });
+    }
+
+    // Spalten Anzahl aktualisieren
+    function aktualisiereSpaltenAnzahl() {
+        const spalten = ['offen', 'in_bearbeitung',
+                        'in_ueberpruefung', 'erledigt'];
+        spalten.forEach(status => {
+            const spalte = document.getElementById(`spalte-${status}`);
+            const count = document.getElementById(`count-${status}`);
+            if (spalte && count) {
+                // Karten zählen (ohne empty-spalte divs)
+                const karten = spalte.querySelectorAll('.aufgabe-karte');
+                count.textContent = karten.length;
+
+                // Empty State anzeigen/verstecken
+                const emptyDiv = spalte.querySelector('.empty-spalte');
+                if (karten.length === 0) {
+                    if (!emptyDiv) {
+                        spalte.innerHTML =
+                            '<div class="empty-spalte">Keine Aufgaben</div>';
+                    }
+                } else {
+                    if (emptyDiv) emptyDiv.remove();
+                }
+            }
+        });
+    }
+
+    // SortableJS für jede Spalte initialisieren
+    document.addEventListener('DOMContentLoaded', function() {
+        const spalten = document.querySelectorAll('.spalte-inhalt');
+
+        spalten.forEach(spalte => {
+            new Sortable(spalte, {
+                group: 'kanban',        // Erlaubt zwischen Spalten ziehen
+                animation: 150,          // Animationsgeschwindigkeit
+                ghostClass: 'karte-ghost',   // CSS Klasse beim Ziehen
+                chosenClass: 'karte-chosen', // CSS Klasse wenn ausgewählt
+                dragClass: 'karte-drag',     // CSS Klasse während Drag
+
+                // Wenn Karte losgelassen wird:
+                onEnd: function(event) {
+                    const aufgabeId = event.item.dataset.aufgabeId;
+                    const neuerStatus = event.to.dataset.status;
+                    const alterStatus = event.from.dataset.status;
+
+                    // Nur updaten wenn Status sich geändert hat
+                    if (neuerStatus !== alterStatus) {
+                        statusUpdate(aufgabeId, neuerStatus);
+                        console.log(
+                            `Aufgabe ${aufgabeId}:
+                            ${alterStatus} → ${neuerStatus}`
+                        );
+                    }
+
+                    // Anzahl immer aktualisieren
+                    aktualisiereSpaltenAnzahl();
+                }
+            });
+        });
+
+        console.log('✅ Kanban Board bereit!');
+    });
+</script>
+
+{% endblock %}
