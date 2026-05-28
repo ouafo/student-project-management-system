@@ -138,9 +138,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',           # Deine static Dateien
-    BASE_DIR / 'projekte' / 'static',  # Ihre static Dateien
+    BASE_DIR / 'static',  # Ihre static Dateien
 ]
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

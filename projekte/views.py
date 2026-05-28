@@ -211,3 +211,35 @@ def einstellungen(request):
         'avatar': avatar,
         'vorname': vorname
     })
+
+@login_required
+def dashboard_view(request):
+    projekte = Projekt.objects.filter(
+        mitgliedschaft_set__user=request.user
+    ).distinct()
+    form = ProjectForm()
+    form.fields['teilnehmer'].queryset = Benutzer.objects.exclude(
+        id=request.user.id
+    )
+    vorname, nachname, fullname, avatar = get_user_info(request.user)
+
+    # Aufgaben Statistiken
+    from aufgaben.models import Aufgabe
+    aufgaben_erledigt = Aufgabe.objects.filter(
+        projekt__in=projekte,
+        status='erledigt'
+    ).count()
+    aufgaben_offen = Aufgabe.objects.filter(
+        projekt__in=projekte,
+        status='offen'
+    ).count()
+
+    return render(request, 'Projekt_view.html', {
+        'projekte': projekte,
+        'form': form,
+        'fullname': fullname,
+        'avatar': avatar,
+        'vorname': vorname,
+        'aufgaben_erledigt': aufgaben_erledigt,
+        'aufgaben_offen': aufgaben_offen,
+    })
