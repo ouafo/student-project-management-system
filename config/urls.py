@@ -25,5 +25,6 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('projekte/', include('projekte.urls')),
     path('kanban/', include('kanban.urls')),
+    path('aufgaben/', include('aufgaben.urls')),
     path('', projekt_views.dashboard_view, name='dashboard'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

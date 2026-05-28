@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titel %}{{ aufgabe.titel }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <h1 class="sidebar-logo">Boardify</h1>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|slice:":2"|upper }}
+            </div>
+            <div>
+                <div class="user-name">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </div>
+                <div class="user-email">{{ request.user.email }}</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                ⌂ Dashboard
+            </a>
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                ▭ Meine Projekte
+            </a>
+            <a href="{% url 'aufgabe_erstellen' %}" class="nav-item">
+                ⊕ Neue Aufgabe
+            </a>
+            <a href="{% url 'profil_bearbeiten' %}" class="nav-item">
+                ♙ Mein Profil
+            </a>
+            <a href="{% url 'einstellungen' %}" class="nav-item">
+                ⚙ Einstellungen
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                ⇱ Abmelden
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <span>›</span>
+            {% if aufgabe.projekt %}
+                <a href="{% url 'projekt_detail' aufgabe.projekt.id %}">
+                    {{ aufgabe.projekt.titel }}
+                </a>
+                <span>›</span>
+            {% endif %}
+            <span class="breadcrumb-active">{{ aufgabe.titel }}</span>
+        </div>
+
+        <!-- Tabs -->
+<div class="tabs">
+    <a href="{% url 'aufgabe_detail' aufgabe.pk %}"
+       class="tab active">
+        Aufgaben
+    </a>
+    {% if aufgabe.projekt %}
+        <a href="{% url 'kanban_board' aufgabe.projekt.id %}"
+           class="tab">
+            Kanban Board
+        </a>
+        <a href="{% url 'chat' %}"
+           class="tab">
+            Chat
+        </a>
+    {% endif %}
+</div>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message info">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="detail-layout">
+            <div>
+                <!-- Beschreibung -->
+                <div class="card">
+                    <h1 class="card-title">{{ aufgabe.titel }}</h1>
+                    <div class="description">
+                        {{ aufgabe.beschreibung }}
+                    </div>
+                </div>
+
+                <!-- Kommentare -->
+                <div class="card">
+                    <h2 class="section-title">
+                        Kommentare ({{ kommentare|length }})
+                    </h2>
+
+                    {% for kommentar in kommentare %}
+                        <div class="comment 
+                            {% if kommentar.autor == request.user %}
+                                comment-own
+                            {% endif %}">
+                            <div class="avatar">
+                                {{ kommentar.autor.username|slice:":2"|upper }}
+                            </div>
+                            <div class="bubble 
+                                {% if kommentar.autor == request.user %}
+                                    me
+                                {% endif %}">
+                                <div class="meta">
+                                    <strong>
+                                        {{ kommentar.autor.get_full_name|default:kommentar.autor.username }}
+                                    </strong>
+                                    {{ kommentar.erstellt_am|date:"d.m.Y H:i" }}
+                                </div>
+                                <div>{{ kommentar.text }}</div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="empty-text">
+                            Noch keine Kommentare vorhanden.
+                        </p>
+                    {% endfor %}
+
+                    <!-- Kommentar Formular -->
+                    <form method="post" class="comment-form">
+                        {% csrf_token %}
+                        {{ kommentar_form.text }}
+                        <button type="submit" 
+                                name="kommentar_absenden" 
+                                class="btn-primary">
+                            Senden
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Details Sidebar -->
+            <div>
+                <div class="card">
+                    <h2 class="section-title">Details</h2>
+
+                    <!-- Status -->
+                    <div class="detail-item">
+                        <div class="detail-label">Status</div>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ status_form.status }}
+                            <button type="submit" 
+                                    name="status_speichern" 
+                                    class="btn-primary" 
+                                    style="margin-top:10px;">
+                                Speichern
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Priorität -->
+                    <div class="detail-item">
+                        <div class="detail-label">Priorität</div>
+                        <span class="prioritaet-badge 
+                              prioritaet-{{ aufgabe.prioritaet }}">
+                            {{ aufgabe.get_prioritaet_display }}
+                        </span>
+                    </div>
+
+                    <!-- Zugewiesen an -->
+                    <div class="detail-item">
+                        <div class="detail-label">Zugewiesen an</div>
+                        <div>
+                            {% if aufgabe.zugewiesen_an %}
+                                {{ aufgabe.zugewiesen_an.get_full_name|default:aufgabe.zugewiesen_an.username }}
+                            {% else %}
+                                Nicht zugewiesen
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Erstellt von -->
+                    <div class="detail-item">
+                        <div class="detail-label">Erstellt von</div>
+                        <div>
+                            {{ aufgabe.erstellt_von.get_full_name|default:aufgabe.erstellt_von.username }}
+                        </div>
+                    </div>
+
+                    <!-- Erstellt am -->
+                    <div class="detail-item">
+                        <div class="detail-label">Erstellt am</div>
+                        <div>{{ aufgabe.erstellt_am|date:"d.m.Y" }}</div>
+                    </div>
+
+                    <!-- Deadline -->
+                    <div class="detail-item">
+                        <div class="detail-label">Deadline</div>
+                        <div>
+                            {% if aufgabe.deadline %}
+                                {{ aufgabe.deadline|date:"d.m.Y" }}
+                            {% else %}
+                                Keine Deadline
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Aktionen -->
+                    <div class="actions">
+                        <a href="{% url 'aufgabe_bearbeiten' aufgabe.pk %}" 
+                           class="btn-primary">
+                            Bearbeiten
+                        </a>
+                        <a href="{% url 'aufgabe_loeschen' aufgabe.pk %}" 
+                           class="btn-danger">
+                            Löschen
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

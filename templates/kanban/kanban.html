@@ -77,7 +77,10 @@
 
         <!-- Neue Aufgabe Button -->
         <div class="kanban-header">
-            <a href="#" class="btn-primary">+ Neue Aufgabe</a>
+            <a href="{% url 'aufgabe_erstellen_projekt' projekt.id %}" 
+               class="btn-primary">
+    + Neue Aufgabe
+</a>
         </div>
 
         <!-- Kanban Board -->

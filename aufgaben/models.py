@@ -1,57 +1,103 @@
+from django.conf import settings
 from django.db import models
-from accounts.models import Benutzer
+from django.urls import reverse
 from projekte.models import Projekt
 
-# Create your models here.
 
 class Aufgabe(models.Model):
 
-    STATUS_CHOICES = [
-        ('offen','Offen'),
-        ('in_bearbeitung','In Bearbeitung'),
-        ('in_ueberpruefung','In Überprüfung'),
-        ('erledig','Erledig'),
-    ]
+    class Status(models.TextChoices):
+        OFFEN = "offen", "Offen"
+        IN_BEARBEITUNG = "in_bearbeitung", "In Bearbeitung"
+        IN_UEBERPRUEFUNG = "in_ueberpruefung", "In Überprüfung"
+        ERLEDIGT = "erledigt", "Erledigt"
 
-    PRIORITAET_CHOICES = [
-        ('niedrig', 'Niedrig'),
-        ('mittel', 'Mittel'),
-        ('hoch', 'Hoch'),
-    ]
+    class Prioritaet(models.TextChoices):
+        NIEDRIG = "niedrig", "Niedrig"
+        MITTEL = "mittel", "Mittel"
+        HOCH = "hoch", "Hoch"
 
     titel = models.CharField(max_length=200)
     beschreibung = models.TextField(blank=True)
+    #  Projekt ForeignKey behalten!
     projekt = models.ForeignKey(
         Projekt,
         on_delete=models.CASCADE,
-        related_name='aufgaben'
+        related_name='aufgaben',
+        null=True,
+        blank=True
+    )
+    status = models.CharField(
+        max_length=30,
+        choices=Status.choices,
+        default=Status.OFFEN
+    )
+    prioritaet = models.CharField(
+        max_length=20,
+        choices=Prioritaet.choices,
+        default=Prioritaet.MITTEL
     )
     zugewiesen_an = models.ForeignKey(
-        Benutzer,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='zugewiesene_aufgaben'
+        related_name="zugewiesene_aufgaben"
     )
     erstellt_von = models.ForeignKey(
-        Benutzer,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='erstellte_aufgaben'
+        related_name="erstellte_aufgaben"
     )
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default='offen'
-    )
-    prioritaet = models.CharField(
-        max_length=10,
-        choices=PRIORITAET_CHOICES,
-        default='mittel'
-    )
-    deadline = models.DateField(null=True, blank=True)
     erstellt_am = models.DateTimeField(auto_now_add=True)
     aktualisiert_am = models.DateTimeField(auto_now=True)
+    deadline = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.titel
 
+    def get_absolute_url(self):
+        return reverse("aufgabe_detail", kwargs={"pk": self.pk})
+
+
+class Kommentar(models.Model):
+    """Kommentare zu einer Aufgabe"""
+    aufgabe = models.ForeignKey(
+        Aufgabe,
+        on_delete=models.CASCADE,
+        related_name="kommentare"
+    )
+    autor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    text = models.TextField()
+    erstellt_am = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["erstellt_am"]
+
+    def __str__(self):
+        return f"Kommentar von {self.autor} zu {self.aufgabe}"
+
+
+class ChatNachricht(models.Model):
+    """Chat Nachrichten zwischen Benutzern"""
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="gesendete_chat_nachrichten"
+    )
+    empfaenger = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="erhaltene_chat_nachrichten"
+    )
+    text = models.TextField()
+    erstellt_am = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["erstellt_am"]
+
+    def __str__(self):
+        return f"{self.sender} → {self.empfaenger}"

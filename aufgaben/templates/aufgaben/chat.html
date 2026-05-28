@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titel %}Chat{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <h1 class="sidebar-logo">Boardify</h1>
+
+        <div class="sidebar-user">
+            <div class="avatar">
+                {{ request.user.username|slice:":2"|upper }}
+            </div>
+            <div>
+                <div class="user-name">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </div>
+                <div class="user-email">{{ request.user.email }}</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                ⌂ Dashboard
+            </a>
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                ▭ Meine Projekte
+            </a>
+            <a href="{% url 'aufgabe_erstellen' %}" class="nav-item">
+                ⊕ Neue Aufgabe
+            </a>
+            <a href="{% url 'profil_bearbeiten' %}" class="nav-item">
+                ♙ Mein Profil
+            </a>
+            <a href="{% url 'einstellungen' %}" class="nav-item">
+                ⚙ Einstellungen
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                ⇱ Abmelden
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="breadcrumb">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <span>›</span>
+            <span class="breadcrumb-active">Chat</span>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Team Chat</h2>
+
+            {% for nachricht in nachrichten %}
+                <div class="comment 
+                    {% if nachricht.sender == request.user %}
+                        comment-own
+                    {% endif %}">
+
+                    {% if nachricht.sender != request.user %}
+                        <div class="avatar">
+                            {{ nachricht.sender.username|slice:":2"|upper }}
+                        </div>
+                    {% endif %}
+
+                    <div class="bubble 
+                        {% if nachricht.sender == request.user %}
+                            me
+                        {% endif %}">
+                        <div class="meta">
+                            <strong>
+                                {{ nachricht.sender.get_full_name|default:nachricht.sender.username }}
+                            </strong>
+                            {{ nachricht.erstellt_am|date:"d.m.Y H:i" }}
+                        </div>
+                        <div>{{ nachricht.text }}</div>
+                    </div>
+
+                    {% if nachricht.sender == request.user %}
+                        <div class="avatar">
+                            {{ nachricht.sender.username|slice:":2"|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p class="empty-text">
+                    Noch keine Nachrichten vorhanden.
+                </p>
+            {% endfor %}
+
+            <!-- Nachricht senden -->
+            <form method="post" style="margin-top: 24px;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ form.empfaenger.id_for_label }}">
+                        Empfänger
+                    </label>
+                    {{ form.empfaenger }}
+                </div>
+                <div class="comment-form">
+                    {{ form.text }}
+                    <button type="submit" class="btn-primary">
+                        Senden
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}
