@@ -95,7 +95,7 @@
                      id="spalte-offen"
                      data-status="offen">
                     {% for aufgabe in offen %}
-                        {% include 'projekte/aufgabe_karte.html' %}
+                        {% include 'kanban/aufgabe_karte.html' %}
                     {% empty %}
                         <div class="empty-spalte">
                             Keine Aufgaben
@@ -117,7 +117,7 @@
                      id="spalte-in_bearbeitung"
                      data-status="in_bearbeitung">
                     {% for aufgabe in in_bearbeitung %}
-                        {% include 'projekte/aufgabe_karte.html' %}
+                        {% include 'kanban/aufgabe_karte.html' %}
                     {% empty %}
                         <div class="empty-spalte">
                             Keine Aufgaben
@@ -139,7 +139,7 @@
                      id="spalte-in_ueberpruefung"
                      data-status="in_ueberpruefung">
                     {% for aufgabe in in_ueberpruefung %}
-                        {% include 'projekte/aufgabe_karte.html' %}
+                        {% include 'kanban/aufgabe_karte.html' %}
                     {% empty %}
                         <div class="empty-spalte">
                             Keine Aufgaben
@@ -161,7 +161,7 @@
                      id="spalte-erledigt"
                      data-status="erledigt">
                     {% for aufgabe in erledigt %}
-                        {% include 'projekte/aufgabe_karte.html' %}
+                        {% include 'kanban/aufgabe_karte.html' %}
                     {% empty %}
                         <div class="empty-spalte">
                             Keine Aufgaben
