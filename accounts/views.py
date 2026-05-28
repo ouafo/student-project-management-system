@@ -4,11 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import RegistrierungsForm, LoginForm
 
-# Create your views here.
 
 def registrierung(request):
     """Benutzerregistrierung"""
-    # Falls bereits eingeloggt → Dashboard
     if request.user.is_authenticated:
         return redirect('dashboard')
 
@@ -23,21 +21,15 @@ def registrierung(request):
             )
             return redirect('dashboard')
         else:
-            messages.error(
-                request,
-                'Bitte korrigiere die Fehler!'
-            )
+            messages.error(request, 'Bitte korrigiere die Fehler!')
     else:
         form = RegistrierungsForm()
 
-    return render(request, 'accounts/registrierung.html', {
-        'form': form
-    })
+    return render(request, 'accounts/registrierung.html', {'form': form})
 
 
 def benutzer_login(request):
     """Benutzer Login"""
-    # Falls bereits eingeloggt → Dashboard
     if request.user.is_authenticated:
         return redirect('dashboard')
 
@@ -59,31 +51,15 @@ def benutzer_login(request):
                 )
                 return redirect('dashboard')
         else:
-            messages.error(
-                request,
-                'Benutzername oder Passwort falsch!'
-            )
+            messages.error(request, 'Benutzername oder Passwort falsch!')
     else:
         form = LoginForm()
 
-    return render(request, 'accounts/login.html', {
-        'form': form
-    })
+    return render(request, 'accounts/login.html', {'form': form})
 
 
 def benutzer_logout(request):
     """Benutzer Logout"""
     logout(request)
-    messages.info(
-        request,
-        'Du wurdest erfolgreich abgemeldet!'
-    )
+    messages.info(request, 'Du wurdest erfolgreich abgemeldet!')
     return redirect('login')
-
-
-@login_required
-def dashboard(request):
-    """Dashboard — nur für eingeloggte Benutzer"""
-    return render(request, 'dashboard.html', {
-        'benutzer': request.user
-    })

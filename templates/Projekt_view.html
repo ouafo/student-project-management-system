@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+     <link rel="stylesheet" href="{% static 'projekt_view.css' %}">
+</head>
+<body>
+
+    <div id="projektModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Erstelle ein neues Projekt</h2>
+                <button class="modal-close" onclick="closeModal()">X</button>
+            </div>
+            <form method="POST" action="{% url 'projekt_erstellen' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Projektname</label>
+                    {{ form.titel }}
+                </div>
+                <div class="form-group">
+                    <label>Beschreibung</label>
+                    {{ form.beschreibung }}
+                </div>
+                <div class="form-group">
+                    <label>Teilnehmer einladen</label>
+                    <div class="teilnehmer-liste">
+                        {{ form.teilnehmer }}
+                    </div>
+                </div>
+                <div class="form-group">
+                <label>Fortschritt (%)</label>
+                {{ form.fortschritt }}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn-cancel" onclick="closeModal()">Abbrechen</button>
+                    <button type="submit" class="btn-erstellen">Erstellen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Projekt löschen</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">X</button>
+            </div>
+            <p id="deleteMessage">Willst du dieses Projekt wirklich löschen?</p>
+            <form id="deleteForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Nein</button>
+                    <button type="submit" class="btn-delete-confirm" onclick="closeDeleteModal()">Ja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="profilModal" class="modal-overlay">
+    <div class="modal-box profil-modal-box">
+
+        <div class="profil-banner">
+            <button class="modal-close profil-close" onclick="closeProfilModal()">✕</button>
+            <div class="profil-banner-avatar" style="{% if request.user.profile.avatar_bild %} background: url('{{ request.user.profile.avatar_bild.url }}') center/cover; {% else %} background: {{ request.user.profile.avatar_farbe }}; {% endif %}">
+                    {% if not request.user.profile.avatar_bild %}
+                        {{ avatar }}
+                    {% endif %}
+                </div>
+            <div class="profil-banner-name">{{ fullname }}</div>
+            <div class="profil-banner-email">{{ request.user.email }}</div>
+        </div>
+
+        <div class="profil-stats-grid">
+            <div class="profil-stat-left">
+                <div class="stat-main-row">
+                    <div class="stat-main-number">{{ projekte.count }}</div>
+                    <div class="stat-main-label">Aktive<br>Projekte</div>
+                </div>
+                <div class="stat-sub">
+                    <img src="{% static 'images/admin.png' %}" alt="" class="modal-icon">
+                    <span>{{ request.user.admin_projekte.count }} davon als Admin</span>
+                </div>
+            </div>
+
+            <div class="profil-stat-divider"></div>
+
+            <div class="profil-stat-right">
+                <div class="aufgaben-row">
+                    <div class="aufgaben-label">
+                        <img src="{% static 'images/done.png' %}" alt="" class="modal-icon">
+                        <span>Erledigte Aufgaben</span>
+                    </div>
+                    <span class="aufgaben-zahl erledigt">{{ aufgaben_erledigt }}</span>
+                </div>
+                <div class="aufgaben-bar-wrap">
+                    <div class="aufgaben-bar">
+                        <div class="aufgaben-bar-fill"
+                             style="width: {% if aufgaben_erledigt or aufgaben_offen %}{{ aufgaben_erledigt|add:0 }}{% else %}0{% endif %}%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profil-motivation">
+            <span class="motivation-emoji"><img src="{% static 'images/gratulation.png' %}" alt="Motivation" class="modal-icon"></span>
+            <p>Weiter so, {{ vorname }}!!! Du machst das großartig.</p>
+        </div>
+
+        <div class="profil-info-box">
+            <div class="profil-info-row">
+                <span class="profil-info-label"><img src="{% static 'images/username.png' %}" alt="Username" class="modal-icon"> Benutzername</span>
+                <span class="profil-info-value">{{ fullname }}</span>
+            </div>
+            <div class="profil-info-row">
+                <span class="profil-info-label"><img src="{% static 'images/mail.png' %}" alt="Mail" class="modal-icon"> E-Mail</span>
+                <span class="profil-info-value">{{ request.user.email }}</span>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeProfilModal()">Schließen</button>
+            <button type="button" class="btn-edit-profil"
+            onclick="window.location='{% url 'profil_bearbeiten' %}'">Profil bearbeiten</button>
+        </div>
+    </div>
+</div>
+
+    <div class="main-layout">
+        <!-- Der linke Rahmen -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">Boardify</h2>
+                <div class="profil">
+                    <div class="avatar" style="{% if request.user.profile.avatar_bild %} background: url('{{ request.user.profile.avatar_bild.url }}') center/cover; {% else %} background: {{ request.user.profile.avatar_farbe }}; {% endif %}">
+                    {% if not request.user.profile.avatar_bild %}
+                        {{ avatar }}
+                    {% endif %}
+                </div>
+                    <div class="user-info">
+                        <strong>{{ vorname }}</strong>
+                        <small>{{ request.user.email }}</small>
+                    </div>
+                </div>
+
+            <nav class="sidebar-menu">
+                <a href="/">Dashboard</a>
+                <a href="#">Meine Projekte</a>
+                <a href="#" onclick="openModal(); return false;">Neues Projekt</a>
+                <a href="#" onclick="openProfilModal(); return false;">Mein Profil</a>
+                <a href="{% url 'einstellungen' %}">Einstellungen</a>
+            </nav>
+            </div>
+            <div class="sidebar-bottom">
+                <div class="sidebar-item">
+                    <img src="{% static 'images/benachrichtigung.png' %}" alt="Benachrichtigung" class="icon">
+                    <a href="#">Benachrichtigungen</a>
+                </div>
+
+                <div class="sidebar-item logout-item">
+                    <img src="{% static 'images/logout.png' %}" alt="Abmelden" class="icon">
+                    <a href="#" class="logout">Abmelden</a>
+                </div>
+            </div>
+        </aside>
+        <main class="content">
+        <div class="welcome-banner">
+            <h1> <img src="{% static 'images/hallo.png' %}" alt="Teilnehmer" class="main-icon">
+                Willkommen zurück, {{ vorname }}! </h1>
+            <p> Du hast {{projekte.count}} aktive Projekte.</p>
+        </div>
+        <div class="projects-header">
+        <h2>Meine Projekte</h2>
+        <button type="button" class="btn-new-project" onclick="openModal()">+ Neues Projekt</button>
+        </div>
+        <div class="project-grid">
+            {%for projekt in projekte %}
+            <div class="project-card">
+            <h3>{{ projekt.titel }}</h3>
+            <p>{{ projekt.beschreibung }}</p>
+
+                <div class="card-meta">
+                    <span>
+                        <img src="{% static 'images/benutzer.png' %}" alt="Teilnehmer" class="icon">
+                        {{ projekt.mitgliedschaft_set.count }}
+                    </span>
+                    <span>
+                        <img src="{% static 'images/uberprufen.png' %}" alt="Aufgaben" class="icon"> 7/12</span>
+                </div>
+
+                <div class="progress-info">
+                    <span>Fortschritt</span>
+                    <span>{{ projekt.fortschritt }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ projekt.fortschritt }}%;"></div>
+                    </div>
+
+            <button class="btn-open">Öffnen</button>
+                {% if projekt.admin == request.user %}
+                <button class="btn-delete" onclick="confirmDelete({{ projekt.id }}, '{{ projekt.titel|escapejs }}')">Löschen
+                </button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        </main>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('projektModal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('projektModal').classList.remove('active');
+        }
+        //Wenn außerhalb geklickt, Modla wird geschlossen
+        document.getElementById('projektModal').addEventListener('click', function(e) {
+            if (e.target == this) closeModal();
+        });
+
+    function confirmDelete(projektId, projektTitel) {
+        document.getElementById("deleteMessage").innerText =
+            `Willst du wirklich das Projekt "${projektTitel}" löschen?`;
+
+        document.getElementById("deleteForm").action =
+            `/projekt-loeschen/${projektId}/`;
+
+        document.getElementById("deleteModal").classList.add("active");
+    }
+
+    function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.remove("active");
+    }
+
+    document.getElementById("deleteModal").addEventListener("click", function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+
+   function openProfilModal(){
+        document.getElementById("profilModal").classList.add("active");
+        }
+   function closeProfilModal(){
+        document.getElementById("profilModal").classList.remove("active");
+        }
+   document.getElementById("profilModal").addEventListener("click", function(e) {
+        if (e.target === this){
+        closeProfilModal();
+        }
+   });
+</script>
+
+
+
+
+</body>
+</html>

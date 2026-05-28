@@ -18,12 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from accounts import views as accounts_views
+from projekte import views as projekt_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('projekte/', include('projekte.urls')),
     path('kanban/', include('kanban.urls')),
-    path('', accounts_views.dashboard, name='dashboard'),
-]   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('', projekt_views.dashboard_view, name='dashboard'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
