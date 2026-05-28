@@ -751,3 +751,68 @@ body {
     vertical-align: middle;
     object-fit: contain;
 }
+
+/* ================================
+   SIDEBAR NAV ITEM KOMPATIBILITÄT
+   ================================ */
+
+.sidebar-nav .nav-item {
+    display: block;
+    padding: 10px 16px;
+    color: #cbd5e1 !important;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all 0.2s;
+}
+
+.sidebar-nav .nav-item:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white !important;
+}
+
+.sidebar-nav .nav-item.active {
+    background-color: #3B82F6;
+    color: white !important;
+}
+
+/* ================================
+   TABS FIX
+   ================================ */
+
+.tabs {
+    background: transparent !important;
+    border-bottom: 2px solid #E2E8F0 !important;
+    margin-bottom: 24px !important;
+}
+
+.tab {
+    color: #1E293B !important;
+    font-weight: 500 !important;
+    background: transparent !important;
+}
+
+.tab:hover {
+    color: #3B82F6 !important;
+}
+
+.tab.active {
+    color: #3B82F6 !important;
+    border-bottom: 2px solid #3B82F6 !important;
+    font-weight: 600 !important;
+}
+
+.main-content {
+    margin-left: 290px !important;
+}
+
+
+
+
+
+
+
+
+
+

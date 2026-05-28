@@ -7,6 +7,25 @@ from .models import Projekt, Mitgliedschaft, Profile
 from .forms import ProjectForm, ProfilForm, PasswortForm
 from aufgaben.models import Aufgabe
 
+def get_sidebar_context(user):
+    """
+    Gibt alle nötigen Daten für die Sidebar zurück
+    → In allen Views benutzen!
+    """
+    from .models import Profile
+    vorname, nachname, fullname, avatar = get_user_info(user)
+
+    # Profil holen oder erstellen
+    profile, created = Profile.objects.get_or_create(user=user)
+
+    return {
+        'vorname': vorname,
+        'nachname': nachname,
+        'fullname': fullname,
+        'avatar': avatar,
+        'profile': profile,
+    }
+
 
 def get_user_info(user):
     """Benutzer Informationen ermitteln"""
@@ -214,16 +233,20 @@ def einstellungen(request):
 
 @login_required
 def dashboard_view(request):
+    #  Zeigt Projekte wo Benutzer Mitglied
+    #    ODER Admin ist!
+    from django.db.models import Q
     projekte = Projekt.objects.filter(
-        mitgliedschaft_set__user=request.user
+        Q(mitgliedschaft_set__user=request.user) |
+        Q(admin=request.user)
     ).distinct()
+
     form = ProjectForm()
     form.fields['teilnehmer'].queryset = Benutzer.objects.exclude(
         id=request.user.id
     )
     vorname, nachname, fullname, avatar = get_user_info(request.user)
 
-    # Aufgaben Statistiken
     from aufgaben.models import Aufgabe
     aufgaben_erledigt = Aufgabe.objects.filter(
         projekt__in=projekte,

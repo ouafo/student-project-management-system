@@ -1,53 +1,68 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block titel %}{{ projekt.name }} — Aufgaben{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'projekt_view.css' %}">
+{% endblock %}
 
 {% block inhalt %}
 <div class="dashboard">
 
     <!-- Sidebar -->
-    <!--
-    <aside class="sidebar">
-        <div class="sidebar-logo">Boardify</div>
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h2 class="logo">Boardify</h2>
 
-        <div class="sidebar-user">
-            <div class="avatar">
-                {{ request.user.username|first|upper }}
+        <!-- Avatar -->
+        <div class="profil">
+            <div class="avatar"
+                 style="
+                 {% if profile.avatar_bild %}
+                     background: url('{{ profile.avatar_bild.url }}') center/cover;
+                 {% else %}
+                     background: {{ profile.avatar_farbe }};
+                 {% endif %}">
+                {% if not profile.avatar_bild %}
+                    {{ avatar }}
+                {% endif %}
             </div>
             <div class="user-info">
-                <p class="user-name">{{ request.user.username }}</p>
-                <p class="user-email">{{ request.user.email }}</p>
+                <strong>{{ vorname }}</strong>
+                <small>{{ request.user.email }}</small>
             </div>
         </div>
 
-        <nav class="sidebar-nav">
-            <a href="{% url 'dashboard' %}" class="nav-item">
-                🏠 Dashboard
+        <!-- Navigation -->
+        <nav class="sidebar-menu">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'dashboard' %}">Meine Projekte</a>
+            <a href="#"
+               onclick="openModal(); return false;">
+                Neues Projekt
             </a>
-            <a href="{% url 'dashboard' %}" class="nav-item active">
-                📁 Meine Projekte
-            </a>
-            <a href="#" class="nav-item">
-                ➕ Neues Projekt
-            </a>
-            <a href="#" class="nav-item">
-                👤 Mein Profil
-            </a>
-            <a href="#" class="nav-item">
-                ⚙️ Einstellungen
-            </a>
+            <a href="{% url 'profil_bearbeiten' %}">Mein Profil</a>
+            <a href="{% url 'einstellungen' %}">Einstellungen</a>
         </nav>
+    </div>
 
-        <div class="sidebar-bottom">
-            <a href="#" class="nav-item">
-                🔔 Benachrichtigungen
-            </a>
-            <a href="{% url 'logout' %}" class="nav-item logout">
-                → Abmelden
+    <!-- Sidebar Bottom -->
+    <div class="sidebar-bottom">
+        <div class="sidebar-item">
+            <img src="{% static 'images/benachrichtigung.png' %}"
+                 alt="Benachrichtigung" class="icon">
+            <a href="#">Benachrichtigungen</a>
+        </div>
+        <div class="sidebar-item logout-item">
+            <img src="{% static 'images/logout.png' %}"
+                 alt="Abmelden" class="icon">
+            <a href="{% url 'logout' %}" class="logout">
+                Abmelden
             </a>
         </div>
-    </aside>
--->
+    </div>
+</aside>
     <!-- Hauptinhalt -->
     <main class="main-content">
 

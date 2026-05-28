@@ -249,7 +249,7 @@
                 <div class="sidebar-item logout-item">
                     <img src="{% static 'images/logout.png' %}"
                          alt="Abmelden" class="icon">
-                    <!-- ✅ Logout URL gefixt! -->
+                    <!--  Logout URL gefixt! -->
                     <a href="{% url 'logout' %}" class="logout">
                         Abmelden
                     </a>
@@ -319,7 +319,7 @@
                         </div>
                     </div>
 
-                    <!-- ✅ Öffnen Button → Aufgabenliste -->
+                    <!--  Öffnen Button → Aufgabenliste -->
                     <a href="{% url 'projekt_detail' projekt.id %}"
                        class="btn-open">
                         Öffnen
@@ -368,7 +368,7 @@
             document.getElementById("deleteMessage").innerText =
                 `Willst du wirklich das Projekt "${projektTitel}" löschen?`;
 
-            // ✅ URL gefixt!
+            //  URL gefixt!
             document.getElementById("deleteForm").action =
                 `/projekte/loeschen/${projektId}/`;
 

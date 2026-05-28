@@ -6,29 +6,36 @@ from django.views.decorators.csrf import csrf_exempt
 from projekte.models import Projekt
 from aufgaben.models import Aufgabe
 import json
+from projekte.views import get_sidebar_context
 
 # Create your views here.
 @login_required
 def kanban_board(request, projekt_id):
-    """Kanban Board eines Projekts"""
     projekt = get_object_or_404(Projekt, id=projekt_id)
 
     offen = Aufgabe.objects.filter(
-        projekt=projekt,
-        status='offen'
+        projekt=projekt, status='offen'
     )
     in_bearbeitung = Aufgabe.objects.filter(
-        projekt=projekt,
-        status='in_bearbeitung'
+        projekt=projekt, status='in_bearbeitung'
     )
     in_ueberpruefung = Aufgabe.objects.filter(
-        projekt=projekt,
-        status='in_ueberpruefung'
+        projekt=projekt, status='in_ueberpruefung'
     )
     erledigt = Aufgabe.objects.filter(
-        projekt=projekt,
-        status='erledigt'
+        projekt=projekt, status='erledigt'
     )
+
+    #  Sidebar Context hinzufügen!
+    context = get_sidebar_context(request.user)
+    context.update({
+        'projekt': projekt,
+        'offen': offen,
+        'in_bearbeitung': in_bearbeitung,
+        'in_ueberpruefung': in_ueberpruefung,
+        'erledigt': erledigt,
+    })
+    return render(request, 'kanban/kanban.html', context)
 
     return render(request, 'kanban/kanban.html', {
         'projekt': projekt,
