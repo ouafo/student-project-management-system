@@ -24,5 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('projekte/', include('projekte.urls')),
+    path('kanban/', include('kanban.urls')),
     path('', accounts_views.dashboard, name='dashboard'),
 ]   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
