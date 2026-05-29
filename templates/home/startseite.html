@@ -1,24 +1,25 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Startseite | Boardify</title>
-  <link rel="stylesheet" href="../static/startseite.css">
+  <link rel="stylesheet" href="{% static 'startseite.css' %}">
 </head>
 <body>
   <header class="header">
     <nav class="navbar">
       <div class="logo"> Boardify</div>
       <ul class="nav-links">
-        <li><a href="registrierung.html" class="btn">Registrieren</a></li>
-        <li><a href="einloggen.html" class="btn">Anmelden</a></li>
+        <li><a href="{% url 'register' %}" class="btn">Registrieren</a></li>
+        <li><a href="{% url 'login' %}" class="btn">Anmelden</a></li>
       </ul>
     </nav>
     <div class="hero">
       <h1>Willkommen bei Boardify</h1>
       <p>Organisiere deine Projekte effizient und arbeite im Team zusammen.</p>
-      <a href="project_view.html" class="cta-btn">Jetzt starten</a>
+      <a href="{% url 'dashboard' %}" class="cta-btn">Jetzt starten</a>
     </div>
   </header>
 

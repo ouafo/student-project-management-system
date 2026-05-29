@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from projekte.models import Project
 
 
 class Aufgabe(models.Model):
+
     class Status(models.TextChoices):
         OFFEN = "offen", "Offen"
         IN_BEARBEITUNG = "in_bearbeitung", "In Bearbeitung"
@@ -15,10 +17,29 @@ class Aufgabe(models.Model):
         MITTEL = "mittel", "Mittel"
         HOCH = "hoch", "Hoch"
 
+    projekt = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="aufgaben",
+        null=True,
+        blank=True
+    )
+
     titel = models.CharField(max_length=200)
+
     beschreibung = models.TextField()
-    status = models.CharField(max_length=30, choices=Status.choices, default=Status.OFFEN)
-    prioritaet = models.CharField(max_length=20, choices=Prioritaet.choices, default=Prioritaet.MITTEL)
+
+    status = models.CharField(
+        max_length=30,
+        choices=Status.choices,
+        default=Status.OFFEN
+    )
+
+    prioritaet = models.CharField(
+        max_length=20,
+        choices=Prioritaet.choices,
+        default=Prioritaet.MITTEL
+    )
 
     zugewiesen_an = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -27,6 +48,7 @@ class Aufgabe(models.Model):
         blank=True,
         related_name="zugewiesene_aufgaben"
     )
+
     erstellt_von = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -34,6 +56,7 @@ class Aufgabe(models.Model):
     )
 
     erstellt_am = models.DateTimeField(auto_now_add=True)
+
     deadline = models.DateField(null=True, blank=True)
 
     def __str__(self):

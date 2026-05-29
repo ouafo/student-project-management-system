@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Project, Mitgliedschaft, Profile
+from .models import Project, Mitgliedschaft, Profile, Notification
 from .forms import ProjectForm, ProfilForm, PasswortForm
 from django.contrib import messages
+from .utils import send_notification
+from django.http import JsonResponse, HttpResponseForbidden
+from django.db.models import Q
 
 
 def get_user_info(user):
@@ -26,16 +29,29 @@ def get_user_info(user):
 
 @login_required
 def dashboard_view(request):
-    projekte = Project.objects.filter(mitgliedschaft_set__user=request.user).distinct()
+    projekte = Project.objects.filter(
+        mitgliedschaft_set__user=request.user
+    ).distinct()
+
     form = ProjectForm()
-    form.fields['teilnehmer'].queryset = User.objects.exclude(id=request.user.id)
+    form.fields['teilnehmer'].queryset = User.objects.exclude(
+        id=request.user.id
+    )
     vorname, nachname, fullname, avatar = get_user_info(request.user)
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+    unread_count = notifications.filter(
+        is_read=False
+    ).count()
     return render(request, 'Projekt_view.html', {
         'projekte': projekte,
         'form': form,
         'fullname': fullname,
         'avatar': avatar,
         'vorname': vorname,
+        'notifications_list': notifications,
+        'unread_count': unread_count,
     })
 
 
@@ -52,6 +68,13 @@ def projekt_erstellen(request):
             teilnehmer = form.cleaned_data.get('teilnehmer')
             for user in teilnehmer:
                 Mitgliedschaft.objects.get_or_create(user=user, project=projekt)
+                #Benachrichtigung für jede Teilnehmer
+                send_notification(
+                    user=user,
+                    title="Du wurdest einem Projekt hinzugefügt!",
+                    message=f"{request.user.username} hat dich zum Projekt '{projekt.titel}' hinzugefügt.",
+                    notification_type="projekt"
+                )
 
             messages.success(request, 'Projekt erfolgreich erstellt!!')
         else:
@@ -178,3 +201,70 @@ def einstellungen(request):
         'avatar': avatar,
         'vorname': vorname
     })
+
+
+@login_required
+def konto_loeschen_view(request):
+    if request.method == 'POST':
+        user = request.user
+        #Den User aus der Session abmelden
+        logout(request)
+
+        user.delete()
+        messages.success(request, "Dein Konto und alle verknüpften Daten wurden erfolgreich gelöscht.")
+        return redirect('startseite')
+
+    return redirect('startseite')
+
+def benachrichtigung_lesen(request, pk):
+    if request.method == 'POST':
+        # Hole die Benachrichtigung, die exakt zu diesem User gehört
+        notification = get_object_or_404(Notification, pk=pk, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False}, status=400)
+
+@login_required
+def globale_suche(request):
+    query = request.GET.get('q', '')
+    projekt_ergebnisse = []
+    profil_ergebnisse = []
+
+    if query:
+        #Zeige Projekte an, wenn der User selbst Mitglied/Admin ist ODER das Projekt öffentlich sichtbar ist
+        projekt_ergebnisse = Project.objects.filter(
+            Q(titel__icontains=query) | Q(beschreibung__icontains=query)
+        ).filter(
+            Q(admin=request.user) |
+            Q(mitgliedschaft_set__user=request.user) |
+            Q(projekte_oeffentlich=True)
+        ).distinct()
+
+        # Zeige Profile an, wenn das Profil öffentlich sichtbar ist
+        profil_ergebnisse = User.objects.filter(
+            Q(username__icontains=query) | Q(email__icontains=query),
+            profile__profil_oeffentlich=True
+        ).exclude(id=request.user.id)
+    context = {
+        'query': query,
+        'projekt_ergebnisse': projekt_ergebnisse,
+        'profil_ergebnisse': profil_ergebnisse,
+    }
+    return render(request, 'projekte/suche_ergebnisse.html', context)
+
+
+@login_required
+def projekt_detail(request, projekt_id):
+    projekt = get_object_or_404(Project, id=projekt_id)
+
+    # Prüfen, ob der aktuelle User Admin oder normales Mitglied ist
+    ist_mitglied = projekt.mitgliedschaft_set.filter(user=request.user).exists()
+    ist_admin = (projekt.admin == request.user)
+
+    #Wenn "Nur Mitgliederzugriff" aktiv ist und der User kein Mitglied ist, SPERREN!
+    if projekt.nur_mitgliederzugriff and not (ist_mitglied or ist_admin):
+        return HttpResponseForbidden("Zugriff verweigert: Dieses Projekt ist privat.")
+
+    # ... Rest deiner normalen View-Logik zum Laden der Aufgaben ...
+    return render(request, 'projekte/projekt_detail.html', {'projekt': projekt})

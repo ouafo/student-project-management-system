@@ -4,9 +4,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', views.dashboard_view, name='dashboard'),
+    path('dashboard/', views.dashboard_view, name='dashboard'),
     path('projekt/erstellen', views.projekt_erstellen, name='projekt_erstellen'),
     path('projekt-loeschen/<int:projekt_id>/', views.projekt_loeschen, name='projekt_loeschen'),
+    path('benachrichtigung/lesen/<int:pk>/', views.benachrichtigung_lesen, name='benachrichtigung_lesen'),
+    path('suche/', views.globale_suche, name='globale_suche'),
     path('profil/bearbeiten/', views.profil_bearbeiten, name='profil_bearbeiten'),
     path('einstellungen/', views.einstellungen, name='einstellungen'),
 

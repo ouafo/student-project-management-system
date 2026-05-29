@@ -49,11 +49,11 @@
                 <button class="modal-close" onclick="closeDeleteModal()">X</button>
             </div>
             <p id="deleteMessage">Willst du dieses Projekt wirklich löschen?</p>
-            <form id="deleteForm" method="POST" enctype="multipart/form-data">
+            <form id="deleteForm" method="POST">
                 {% csrf_token %}
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Nein</button>
-                    <button type="submit" class="btn-delete-confirm" onclick="closeDeleteModal()">Ja</button>
+                    <button type="submit" class="btn-delete-confirm">Ja</button>
                 </div>
             </form>
         </div>
@@ -155,14 +155,48 @@
             </nav>
             </div>
             <div class="sidebar-bottom">
-                <div class="sidebar-item">
-                    <img src="{% static 'images/benachrichtigung.png' %}" alt="Benachrichtigung" class="icon">
-                    <a href="#">Benachrichtigungen</a>
+                <div class="sidebar-item notification-area" style="position: relative;">
+
+                    <div id="bellBtn" style="display: flex; align-items: center; width: 100%; cursor: pointer; position: relative;">
+
+                        <img src="{% static 'images/benachrichtigung.png' %}" alt="Benachrichtigung" class="icon">
+                        <a href="#" onclick="return false;" style="margin-left: 10px; text-decoration: none; color: inherit;">Benachrichtigungen</a>
+
+                        {% if unread_count > 0 %}
+                            <span style="position: absolute; top: 2px; left: 22px; width: 8px; height: 8px; background: #dc2626; border-radius: 50%;"></span>
+                        {% endif %}
+                    </div>
+
+                    <div id="notiBox" style="display: none; position: absolute; left: 0; bottom: 50px; width: 300px; background: white; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 999; padding: 12px; color: #1e293b;">
+                        <h3 style="font-size: 14px; margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; font-weight: bold;">Benachrichtigungen</h3>
+
+                        <div style="max-height: 250px; overflow-y: auto;">
+                            {% for n in notifications_list %}
+                                <div class="noti-card {% if not n.is_read %}unread{% endif %}" data-id="{{ n.id }}" style="padding: 8px; border-radius: 8px; margin-bottom: 6px; cursor: pointer; border-bottom: 1px solid #f8fafc; {% if not n.is_read %}background: #f8fafc; font-weight: 600;{% else %}background: white;{% endif %}">
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; align-items: center;">
+                                        <span>{{ n.title }}</span>
+                                        <span class="arrow" style="font-size: 10px; color: #94a3b8;">▼</span>
+                                    </div>
+                                    <div class="noti-content" style="display: none; font-size: 12px; color: #475569; margin-top: 6px; font-weight: normal; line-height: 1.4;">
+                                        {{ n.message }}
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p style="text-align: center; color: #94a3b8; font-size: 13px; margin: 15px 0;">Keine Benachrichtigungen</p>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="sidebar-item logout-item">
-                    <img src="{% static 'images/logout.png' %}" alt="Abmelden" class="icon">
-                    <a href="#" class="logout">Abmelden</a>
+                    <form method="POST" action="{% url 'logout' %}" style="display: flex; align-items: center; width: 100%;"
+                          onsubmit="return confirm('Möchtest du dich wirklich abmelden?');">
+                        {% csrf_token %}
+                        <img src="{% static 'images/logout.png' %}" alt="Abmelden" class="icon">
+                        <button type="submit" class="logout" style="background: none; border: none; padding: 0; margin: 0; cursor: pointer; text-align: left; font-family: inherit; font-size: inherit; color: inherit; width: 100%;">
+                            Abmelden
+                        </button>
+                    </form>
                 </div>
             </div>
         </aside>
@@ -171,10 +205,16 @@
             <h1> <img src="{% static 'images/hallo.png' %}" alt="Teilnehmer" class="main-icon">
                 Willkommen zurück, {{ vorname }}! </h1>
             <p> Du hast {{projekte.count}} aktive Projekte.</p>
+
         </div>
         <div class="projects-header">
-        <h2>Meine Projekte</h2>
-        <button type="button" class="btn-new-project" onclick="openModal()">+ Neues Projekt</button>
+            <h2>Meine Projekte</h2>
+            <div class="sidebar-search" style="padding: 10px 15px;">
+                <form method="GET" action="{% url 'globale_suche' %}">
+                    <input type="text" name="q" placeholder="Projekte oder User suchen..."
+                           style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white;">
+                </form>
+            </div>
         </div>
         <div class="project-grid">
             {%for projekt in projekte %}
@@ -188,15 +228,16 @@
                         {{ projekt.mitgliedschaft_set.count }}
                     </span>
                     <span>
-                        <img src="{% static 'images/uberprufen.png' %}" alt="Aufgaben" class="icon"> 7/12</span>
+                        <img src="{% static 'images/uberprufen.png' %}" alt="Aufgaben" class="icon">
+                        {{ projekt.erledigte_aufgaben_zaehlen }}/{{ projekt.aufgaben_gesamt }}</span>
                 </div>
 
                 <div class="progress-info">
                     <span>Fortschritt</span>
-                    <span>{{ projekt.fortschritt }}%</span>
+                    <span>{{ projekt.berechne_fortschritt }}%</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress" style="width: {{ projekt.fortschritt }}%;"></div>
+                    <div class="progress" style="width: {{ projekt.berechne_fortschritt }}%;"></div>
                     </div>
 
             <button class="btn-open">Öffnen</button>
@@ -222,37 +263,126 @@
             if (e.target == this) closeModal();
         });
 
-    function confirmDelete(projektId, projektTitel) {
+        function confirmDelete(projektId, projektTitel) {
         document.getElementById("deleteMessage").innerText =
             `Willst du wirklich das Projekt "${projektTitel}" löschen?`;
 
-        document.getElementById("deleteForm").action =
-            `/projekt-loeschen/${projektId}/`;
-
+        document.getElementById("deleteForm").action = `/projekte/projekt-loeschen/${projektId}/`;
         document.getElementById("deleteModal").classList.add("active");
     }
 
-    function closeDeleteModal() {
-        document.getElementById("deleteModal").classList.remove("active");
-    }
+        function closeDeleteModal() {
+            document.getElementById("deleteModal").classList.remove("active");
+        }
 
-    document.getElementById("deleteModal").addEventListener("click", function(e) {
-        if (e.target === this) {
-            closeDeleteModal();
-        }
-    });
+        document.getElementById("deleteModal").addEventListener("click", function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
 
-   function openProfilModal(){
-        document.getElementById("profilModal").classList.add("active");
+       function openProfilModal(){
+            document.getElementById("profilModal").classList.add("active");
+            }
+       function closeProfilModal(){
+            document.getElementById("profilModal").classList.remove("active");
+            }
+       document.getElementById("profilModal").addEventListener("click", function(e) {
+            if (e.target === this){
+            closeProfilModal();
+            }
+       });
+
+        const bellBtn = document.getElementById('bellBtn');
+        const notiBox = document.getElementById('notiBox');
+
+        if (bellBtn && notiBox) {
+
+            // Popup öffnen/schließen
+            bellBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                console.log("Glocke wurde geklickt!");
+
+                if (window.getComputedStyle(notiBox).display === 'none') {
+                    notiBox.style.display = 'block';
+                } else {
+                    notiBox.style.display = 'none';
+                }
+            });
+
+            // Schließen bei Klick außerhalb
+            document.addEventListener('click', function(e) {
+                if (!notiBox.contains(e.target) && !bellBtn.contains(e.target)) {
+                    notiBox.style.display = 'none';
+                }
+            });
+
+        } else {
+            console.error("Glocke oder NotiBox wurden im HTML nicht gefunden!");
         }
-   function closeProfilModal(){
-        document.getElementById("profilModal").classList.remove("active");
-        }
-   document.getElementById("profilModal").addEventListener("click", function(e) {
-        if (e.target === this){
-        closeProfilModal();
-        }
-   });
+
+
+        // Benachrichtigung aufklappen
+        const cards = document.querySelectorAll('.noti-card');
+
+        cards.forEach(card => {
+            card.addEventListener('click', function(e) {
+
+                e.stopPropagation();
+
+                const content = this.querySelector('.noti-content');
+                const arrow = this.querySelector('.arrow');
+                const notiId = this.getAttribute('data-id');
+
+                if (
+                    content.style.display === 'none' ||
+                    content.style.display === ''
+                ) {
+
+                    content.style.display = 'block';
+                    arrow.textContent = '▲';
+
+                    this.style.background = 'white';
+                    this.style.fontWeight = 'normal';
+
+                    this.classList.remove('unread');
+
+                    fetch(`/projekte/benachrichtigung/lesen/${notiId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        if (data.success) {
+
+                            const remainingUnread =
+                                document.querySelectorAll('.noti-card.unread').length;
+
+                            if (remainingUnread === 0) {
+
+                                const redDot =
+                                    document.querySelector('#bellBtn span');
+
+                                if (redDot) {
+                                    redDot.remove();
+                                }
+                            }
+                        }
+                    });
+
+                } else {
+
+                    content.style.display = 'none';
+                    arrow.textContent = '▼';
+                }
+            });
+        });
 </script>
 
 

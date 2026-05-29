@@ -29,6 +29,13 @@ class ProjectForm(forms.ModelForm):
             'beschreibung': forms.Textarea(attrs={'placeholder': 'Beschreibe kurz dein Projekt', 'rows': 3}),
         }"""
 
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # Es werden nur User angezeigt, deren Profil das erlaubt
+            self.fields['teilnehmer'].queryset = User.objects.filter(
+                profile__in_teilnehmerliste_auffindbar=True
+            )
+
 class ProfilForm(forms.Form):
     vorname = forms.CharField(
         max_length=50,

@@ -7,7 +7,8 @@ from django.views.decorators.http import require_POST
 
 from .forms import AufgabeForm, KommentarForm, StatusForm, ChatNachrichtForm
 from .models import Aufgabe, ChatNachricht
-
+from django.shortcuts import render
+from projekte.utils import send_notification
 
 @login_required
 def kanban_board(request):
@@ -79,6 +80,14 @@ def aufgabe_erstellen(request):
             aufgabe = form.save(commit=False)
             aufgabe.erstellt_von = request.user
             aufgabe.save()
+            # Benachrichtigung für jede Teilnehmer
+            if aufgabe.zugewiesen_an:  # Prüfen, ob überhaupt jemand zugewiesen wurde
+                send_notification(
+                    user=aufgabe.zugewiesen_an,
+                    title="Neue Aufgabe zugewiesen",
+                    message=f"Dir wurde die Aufgabe '{aufgabe.titel}' von {request.user.username} zugewiesen.",
+                    notification_type="aufgabe"
+                )
             messages.success(request, "Aufgabe wurde erstellt.")
             return redirect("aufgaben:aufgabe_detail", pk=aufgabe.pk)
     else:
@@ -164,6 +173,14 @@ def chat_view(request):
             nachricht = form.save(commit=False)
             nachricht.sender = request.user
             nachricht.save()
+
+            # Benachrichtigung für jede Teilnehmer
+            send_notification(
+                user=user,
+                title="Du wurdest einem Projekt hinzugefügt!",
+                message=f"{request.user.username} hat dich zum Projekt '{projekt.name}' hinzugefügt.",
+                notification_type="projekt"
+            )
             messages.success(request, "Nachricht wurde gesendet.")
             return redirect("aufgaben:chat")
     else:

@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "aufgaben",
+    "projekte",
+    "accounts",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,17 +53,20 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+LOGIN_REDIRECT_URL = '/projekte/'
+LOGIN_URL = '/accounts/login/'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'projekte.context_processors.projekte_notifications',
             ],
         },
     },
@@ -72,14 +77,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'boardify_db',
-        'USER': 'postgres',
-        'PASSWORD': 'DataAnalysis1995!',
-        'HOST': '127.0.0.1',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        'USER': 'dein_user',
+        'PASSWORD': 'dein_passwort',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
@@ -120,5 +124,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-LOGIN_REDIRECT_URL = "/aufgaben/"
-LOGOUT_REDIRECT_URL = "/accounts/login/"
+STATICFILES_DIRS = [
+    BASE_DIR / 'projekte/static',
+    BASE_DIR / 'templates/static',  # ← hinzufügen
+]
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = "startseite"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
