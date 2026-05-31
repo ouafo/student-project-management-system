@@ -308,3 +308,25 @@ body {
 .pw-check-ok   { color: #22c55e; }
 .pw-check-fail { color: #ef4444; }
 
+.username-result {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.result-label {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.result-username {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 16px 24px;
+    letter-spacing: 1px;
+}
+

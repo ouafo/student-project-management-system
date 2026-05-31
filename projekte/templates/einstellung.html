@@ -25,14 +25,8 @@
             <h2 class="logo">Boardify</h2>
             <div class="profil">
                 <div class="avatar"
-                     style="{% if request.user.profile.avatar_bild %}
-                     background-image:url('{{ request.user.profile.avatar_bild.url }}');
-                     {% else %}
-                     background:{{ request.user.profile.avatar_farbe }};
-                     {% endif %}">
-                    {% if not request.user.profile.avatar_bild %}
-                        {{ avatar }}
-                    {% endif %}
+                     style="{% if request.user.profile.avatar_bild %}background-image:url('{{ request.user.profile.avatar_bild.url }}');{% else %}background:{{ request.user.profile.avatar_farbe }};{% endif %}">
+                    {% if not request.user.profile.avatar_bild %}{{ avatar }}{% endif %}
                 </div>
                 <div class="user-info">
                     <strong>{{ vorname }}</strong>
@@ -48,34 +42,66 @@
             </nav>
         </div>
         <div class="sidebar-bottom">
+                <div class="sidebar-item notification-area" style="position: relative;">
+
+                    <div id="bellBtn" style="display: flex; align-items: center; width: 100%; cursor: pointer; position: relative;">
+
+                        <img src="{% static 'images/benachrichtigung.png' %}" alt="Benachrichtigung" class="icon">
+                        <a href="#" onclick="return false;" style="margin-left: 10px; text-decoration: none; color: inherit;">Benachrichtigungen</a>
+
+                        {% if unread_count > 0 %}
+                            <span style="position: absolute; top: 2px; left: 22px; width: 8px; height: 8px; background: #dc2626; border-radius: 50%;"></span>
+                        {% endif %}
+                    </div>
+
+                    <div id="notiBox" style="display: none; position: absolute; left: 0; bottom: 50px; width: 300px; background: white; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 999; padding: 12px; color: #1e293b;">
+                        <h3 style="font-size: 14px; margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; font-weight: bold;">Benachrichtigungen</h3>
+
+                        <div style="max-height: 250px; overflow-y: auto;">
+                            {% for n in notifications_list %}
+                                <div class="noti-card {% if not n.is_read %}unread{% endif %}" data-id="{{ n.id }}" style="padding: 8px; border-radius: 8px; margin-bottom: 6px; cursor: pointer; border-bottom: 1px solid #f8fafc; {% if not n.is_read %}background: #f8fafc; font-weight: 600;{% else %}background: white;{% endif %}">
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; align-items: center;">
+                                        <span>{{ n.title }}</span>
+                                        <span class="arrow" style="font-size: 10px; color: #94a3b8;">▼</span>
+                                    </div>
+                                    <div class="noti-content" style="display: none; font-size: 12px; color: #475569; margin-top: 6px; font-weight: normal; line-height: 1.4;">
+                                        {{ n.message }}
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p style="text-align: center; color: #94a3b8; font-size: 13px; margin: 15px 0;">Keine Benachrichtigungen</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             <div class="sidebar-item">
-                <img src="{% static 'images/benachrichtigung.png' %}" alt="Benachrichtigung" class="icon">
-                <a href="#">Benachrichtigungen</a>
-            </div>
-            <div class="sidebar-item">
-                <img src="{% static 'images/logout.png' %}" alt="Abmelden" class="icon-logout">
-                <a href="#" class="logout">Abmelden</a>
+                <form method="POST" action="{% url 'logout' %}" style="display: flex; align-items: center; width: 100%;"
+                          onsubmit="return confirm('Möchtest du dich wirklich abmelden?');">
+                        {% csrf_token %}
+                        <img src="{% static 'images/logout.png' %}" alt="Abmelden" class="icon">
+                        <button type="submit" class="logout" style="background: none; border: none; padding: 0; margin: 0; cursor: pointer; text-align: left; font-family: inherit; font-size: inherit; color: inherit; width: 100%;">
+                            Abmelden
+                        </button>
+                </form>
             </div>
         </div>
     </aside>
 
-    <main class="content settings-content">
+    <main class="settings-content">
 
-        <div class="settings-banner">
-            <div class="topbar">
-                <a href="{% url 'dashboard' %}" class="btn-back">
-                    ← Zur Projektsicht
-                </a>
-            </div>
-            <div class="settings-header">
-                <h1>Einstellungen</h1>
-                <p>App-Verhalten, Benachrichtigungen und Sichtbarkeit anpassen</p>
-            </div>
+        <div class="topbar">
+            <a href="{% url 'dashboard' %}" class="btn-back">← Zur Projektsicht</a>
+        </div>
+
+        <div class="settings-header">
+            <h1>Einstellungen</h1>
+            <p>App-Verhalten, Benachrichtigungen und Sichtbarkeit anpassen</p>
         </div>
 
         <form method="POST" class="settings-form">
             {% csrf_token %}
 
+            <!-- BENACHRICHTIGUNGEN -->
             <section class="settings-card">
                 <div class="card-head">
                     <div class="card-icon blue">
@@ -93,7 +119,8 @@
                         <p>E-Mail erhalten wenn du zu einem Projekt eingeladen wirst</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" name="notify_email" {% if profile.notify_email %}checked{% endif %}>
+                        <input type="checkbox" name="notify_email"
+                               {% if profile.notify_email %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -104,7 +131,8 @@
                         <p>E-Mail erhalten wenn dir eine neue Aufgabe zugewiesen wird</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" name="notify_system" {% if profile.notify_system %}checked{% endif %}>
+                        <input type="checkbox" name="notify_system"
+                               {% if profile.notify_system %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -112,25 +140,29 @@
                 <div class="setting-item">
                     <div>
                         <strong>Projekt abgeschlossen</strong>
-                        <p>E-Mail erhalten wenn ein Projekt den Fortschritt 100% erreicht</p>
+                        <p>E-Mail erhalten wenn ein Projekt 100% Fortschritt erreicht</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" name="notify_projekt">
+                        <input type="checkbox" name="notify_projekt"
+                               {% if profile.notify_projekt %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
                 </div>
+
                 <div class="setting-item">
                     <div>
                         <strong>Deadline erreicht</strong>
-                        <p>E-Mail erhalten wenn ein Deadline erreicht wird</p>
+                        <p>E-Mail erhalten wenn eine Deadline erreicht wird</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" name="notify_projekt">
+                        <input type="checkbox" name="notify_deadline"
+                               {% if profile.notify_deadline %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
                 </div>
             </section>
 
+            <!-- DARSTELLUNG -->
             <section class="settings-card">
                 <div class="card-head">
                     <div class="card-icon purple">
@@ -148,9 +180,9 @@
                         <p>Sprache der Benutzeroberfläche</p>
                     </div>
                     <select class="lang-select" name="sprache">
-                        <option value="de" {% if profile.sprache == 'de' %}selected{% endif %}> Deutsch</option>
-                        <option value="en" {% if profile.sprache == 'en' %}selected{% endif %}> English</option>
-                        <option value="fr" {% if profile.sprache == 'fr' %}selected{% endif %}> Français</option>
+                        <option value="de" {% if profile.sprache == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                        <option value="en" {% if profile.sprache == 'en' %}selected{% endif %}>🇬🇧 English</option>
+                        <option value="fr" {% if profile.sprache == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
                     </select>
                 </div>
 
@@ -160,12 +192,14 @@
                         <p>Kleinere Projektkarten für mehr Übersicht auf dem Dashboard</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" name="kompakt_modus" {% if profile.kompakt_modus %}checked{% endif %}>
+                        <input type="checkbox" name="kompakt_modus"
+                               {% if profile.kompakt_modus %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
                 </div>
             </section>
 
+            <!-- DATENSCHUTZ -->
             <section class="settings-card">
                 <div class="card-head">
                     <div class="card-icon green">
@@ -183,7 +217,8 @@
                         <p>Andere Nutzer können dein Profil und deine Statistiken sehen</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" name="profil_oeffentlich" {% if profile.profil_oeffentlich %}checked{% endif %}>
+                        <input type="checkbox" name="profil_oeffentlich"
+                               {% if profile.profil_oeffentlich %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -194,33 +229,12 @@
                         <p>Andere können dich zu ihren Projekten einladen</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" name="auffindbar" {% if profile.auffindbar %}checked{% endif %}>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <div>
-                        <strong>Projekte öffentlich sichtbar</strong>
-                        <p>Auch Nutzer außerhalb des Projekts können Projektdetails sehen</p>
-                    </div>
-
-                    <label class="switch">
-                        <input type="checkbox" name="projekt_oeffentlich">
+                        <input type="checkbox" name="auffindbar"
+                               {% if profile.in_teilnehmerliste_auffindbar %}checked{% endif %}>
                         <span class="slider"></span>
                     </label>
                 </div>
 
-                <div class="setting-item">
-                    <div>
-                        <strong>Nur Mitgliederzugriff</strong>
-                        <p>Projekte können ausschließlich von Projektmitgliedern geöffnet werden</p>
-                    </div>
-
-                    <label class="switch">
-                        <input type="checkbox" name="nur_mitglieder" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
             </section>
 
             <div class="save-wrap">
@@ -238,6 +252,77 @@
             t.style.opacity = '0';
         });
     }, 4000);
+
+    // Schließen bei Klick außerhalb
+            document.addEventListener('click', function(e) {
+                if (!notiBox.contains(e.target) && !bellBtn.contains(e.target)) {
+                    notiBox.style.display = 'none';
+                }
+            });
+
+        } else {
+            console.error("Glocke oder NotiBox wurden im HTML nicht gefunden!");
+        }
+
+    // Benachrichtigung aufklappen
+        const cards = document.querySelectorAll('.noti-card');
+
+        cards.forEach(card => {
+            card.addEventListener('click', function(e) {
+
+                e.stopPropagation();
+
+                const content = this.querySelector('.noti-content');
+                const arrow = this.querySelector('.arrow');
+                const notiId = this.getAttribute('data-id');
+
+                if (
+                    content.style.display === 'none' ||
+                    content.style.display === ''
+                ) {
+
+                    content.style.display = 'block';
+                    arrow.textContent = '▲';
+
+                    this.style.background = 'white';
+                    this.style.fontWeight = 'normal';
+
+                    this.classList.remove('unread');
+
+                    fetch(`/projekte/benachrichtigung/lesen/${notiId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        if (data.success) {
+
+                            const remainingUnread =
+                                document.querySelectorAll('.noti-card.unread').length;
+
+                            if (remainingUnread === 0) {
+
+                                const redDot =
+                                    document.querySelector('#bellBtn span');
+
+                                if (redDot) {
+                                    redDot.remove();
+                                }
+                            }
+                        }
+                    });
+
+                } else {
+
+                    content.style.display = 'none';
+                    arrow.textContent = '▼';
+                }
+            });
+        });
 </script>
 </body>
 </html>
