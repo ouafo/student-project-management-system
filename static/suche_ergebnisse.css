@@ -1,0 +1,304 @@
+:root {
+            --bg-main: #f8fafc;
+            --dark-blue: #0f172a;       /* Tiefes Dunkelblau für Header/Texte */
+            --light-blue: #38bdf8;      /* Hellblau für Akzente */
+            --accent-blue: #0284c7;     /* Kräftigeres Blau für Interaktionen */
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* Hero / Header Bereich */
+        .search-header {
+            background-color: var(--dark-blue);
+            color: white;
+            padding: 40px 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--light-blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .search-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white; /* Garantiert lesbar! */
+        }
+
+        .search-stats {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        /* Hauptinhalt Grid */
+        .search-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .search-section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--dark-blue);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: inline-block;
+        }
+
+        /* Projekt-Karten Styling */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-card h3 {
+            color: var(--dark-blue);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .project-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            height: 45px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Fortschrittsbalken */
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            background: linear-gradient(90deg, #0284c7, var(--light-blue));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .btn-open {
+            display: block;
+            text-align: center;
+            background-color: var(--dark-blue);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-open:hover {
+            background-color: var(--accent-blue);
+        }
+
+        /* Profil-Karten Styling */
+        .user-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .user-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-info strong {
+            color: var(--dark-blue);
+            font-size: 1.05rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .user-info small {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-message {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border: 1px dashed #cbd5e1;
+        }
+        /* Klickbarkeit und Hover-Effekt der Profil-Karten */
+        .user-card {
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Ausrichtung der Icons in den Sektions-Überschriften */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: inline-block;
+        }
+
+        .profil-stats-clean {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.05rem;
+            color: #f1f5f9; /* Ein schönes, helles Grau/Weiß für den Text */
+        }
+
+        .stat-number {
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .search-header h1 {
+            color: #ffffff !important;
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+        }
+
+        .search-stats {
+            color: #94a3b8 !important;
+            font-size: 1rem;
+        }
+        .search-stats strong {
+            color: #38bdf8 !important;
+        }
+
+        .back-link {
+            color: #38bdf8 !important;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Steuerung für den Bearbeiten-Button (wird via JS auf block gesetzt) */
+        .btn-edit-profil-hidden {
+            display: none;
+        }

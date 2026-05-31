@@ -21,6 +21,13 @@ class ProjectForm(forms.ModelForm):
         model = Projekt          # ← Projekt statt Project!
         fields = ['titel', 'beschreibung', 'fortschritt']
 
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # Es werden nur User angezeigt, deren Profil das erlaubt
+            self.fields['teilnehmer'].queryset = Benutzer.objects.filter(
+                profile__in_teilnehmerliste_auffindbar=True
+            )
+
 
 class ProfilForm(forms.Form):
     vorname = forms.CharField(
