@@ -1,47 +1,61 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Startseite | Boardify</title>
-  <link rel="stylesheet" href="../static/startseite.css">
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Startseite | Boardify</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link rel="stylesheet" href="{% static 'startseite.css' %}">
 </head>
+
 <body>
-  <header class="header">
+<header class="header">
     <nav class="navbar">
-      <div class="logo"> Boardify</div>
-      <ul class="nav-links">
-        <li><a href="registrierung.html" class="btn">Registrieren</a></li>
-        <li><a href="einloggen.html" class="btn">Anmelden</a></li>
-      </ul>
+        <div class="logo">Boardify</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'register' %}" class="btn">Registrieren</a></li>
+            <li><a href="{% url 'login' %}" class="btn">Anmelden</a></li>
+        </ul>
     </nav>
+
     <div class="hero">
-      <h1>Willkommen bei Boardify</h1>
-      <p>Organisiere deine Projekte effizient und arbeite im Team zusammen.</p>
-      <a href="project_view.html" class="cta-btn">Jetzt starten</a>
-    </div>
-  </header>
+        <h1>Willkommen bei Boardify</h1>
+        <p>Organisiere deine Projekte effizient und arbeite im Team zusammen.</p>
 
-  <section class="features">
+        {% if user.is_authenticated %}
+            <a href="{% url 'project_view' %}" class="cta-btn">Zu deinen Projekten</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="cta-btn">Jetzt starten</a>
+        {% endif %}
+    </div>
+</header>
+
+<section class="features">
     <h2>Unsere Funktionen</h2>
-    <div class="feature-grid">
-      <div class="feature">
-        <h3>Projektübersicht</h3>
-        <p>Behalte alle Aufgaben und Fortschritte im Blick.</p>
-      </div>
-      <div class="feature">
-        <h3>Teamkommunikation</h3>
-        <p>Arbeite reibungslos mit deinem Team zusammen.</p>
-      </div>
-      <div class="feature">
-        <h3>Analyse & Berichte</h3>
-        <p>Erhalte wertvolle Einblicke in deine Projekte.</p>
-      </div>
-    </div>
-  </section>
 
-  <footer>
+    <div class="feature-grid">
+        <div class="feature">
+            <h3>Projektübersicht</h3>
+            <p>Behalte alle Aufgaben und Fortschritte im Blick.</p>
+        </div>
+
+        <div class="feature">
+            <h3>Teamkommunikation</h3>
+            <p>Arbeite reibungslos mit deinem Team zusammen.</p>
+        </div>
+
+        <div class="feature">
+            <h3>Analyse & Berichte</h3>
+            <p>Erhalte wertvolle Einblicke in deine Projekte.</p>
+        </div>
+    </div>
+</section>
+
+<footer>
     <p>&copy; 2026 Boardify. Alle Rechte vorbehalten.</p>
-  </footer>
+</footer>
+
 </body>
 </html>

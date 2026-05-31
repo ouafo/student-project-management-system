@@ -2,12 +2,16 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  background-color:rgb(26 46 53 / 0.28);
+  /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
+  /*color: #333;*/
+  /*background-color:rgb(26 46 53 / 0.28);*/
+  background: url("../static/images/background_startseite.jpg") no-repeat center;
+  background-size:cover;
+
 }
 
 .navbar {
@@ -56,9 +60,11 @@ body {
 .hero {
   text-align: center;
   padding: 6rem 2rem;
-  background: linear-gradient(to right, #004aad, #007bff);
+ /*background: linear-gradient(to right, #004aad, #007bff);*/
   color: #fff;
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+
+
 }
 
 .hero h1 {
@@ -84,8 +90,9 @@ body {
   margin-bottom: 2rem;
 }
 .features {
-  padding: 4rem 2rem;
+  padding: 8rem 2rem;
   text-align: center;
+
 }
 
 .feature-grid {
@@ -101,6 +108,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: transform 0.3s;
+
 }
 .feature:hover {
   transform: translateY(-5px);

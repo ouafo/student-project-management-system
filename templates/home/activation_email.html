@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+Hallo {{ user.username }},
+
+danke für deine Registrierung bei Boardify.
+
+Bitte klicke auf den folgenden Link, um deinen Account zu aktivieren:
+
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+Wenn du dich nicht registriert hast, kannst du diese E-Mail ignorieren.
+
+</body>
+</html>
