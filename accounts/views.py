@@ -1,31 +1,42 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.contrib import messages
-from .forms import RegistrierungsForm, LoginForm
+from django.views.decorators.http import require_POST
+
+from .forms import RegisterForm
+
+User = get_user_model()
 
 
-def registrierung(request):
+def startseite(request):
+    """Startseite"""
+    return render(request, 'accounts/startseite.html')
+
+
+def register(request):
     """Benutzerregistrierung"""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == 'POST':
-        form = RegistrierungsForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
-            benutzer = form.save()
-            login(request, benutzer)
+            user = form.save()
+            user.set_password(form.cleaned_data['passwort'])
+            user.save()
+
             messages.success(
                 request,
-                f'Willkommen bei Boardify, {benutzer.username}! 🎉'
+                'Registrierung erfolgreich! Bitte einloggen.'
             )
-            return redirect('dashboard')
-        else:
-            messages.error(request, 'Bitte korrigiere die Fehler!')
+            return redirect('login')
     else:
-        form = RegistrierungsForm()
+        form = RegisterForm()
 
-    return render(request, 'accounts/registrierung.html', {'form': form})
+    return render(request, 'accounts/registrierung.html', {
+        'form': form
+    })
 
 
 def benutzer_login(request):
@@ -34,32 +45,51 @@ def benutzer_login(request):
         return redirect('dashboard')
 
     if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            benutzer = authenticate(
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+        if user is not None:
+            login(request, user)
+            messages.success(
                 request,
-                username=username,
-                password=password
+                f'Willkommen zurück, {user.username}! 👋'
             )
-            if benutzer is not None:
-                login(request, benutzer)
-                messages.success(
-                    request,
-                    f'Willkommen zurück, {benutzer.username}! 👋'
-                )
-                return redirect('dashboard')
+            return redirect('dashboard')
         else:
-            messages.error(request, 'Benutzername oder Passwort falsch!')
-    else:
-        form = LoginForm()
-
-    return render(request, 'accounts/login.html', {'form': form})
+            messages.error(
+                request,
+                'Benutzername oder Passwort falsch!'
+            )
+    return render(request, 'accounts/login.html')
 
 
 def benutzer_logout(request):
     """Benutzer Logout"""
     logout(request)
-    messages.info(request, 'Du wurdest erfolgreich abgemeldet!')
-    return redirect('login')
+    messages.info(
+        request,
+        'Du wurdest erfolgreich abgemeldet!'
+    )
+    return redirect('startseite')
+
+
+def username_vergessen(request):
+    """Username vergessen"""
+    gefundener_username = None
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        try:
+            user = User.objects.get(email=email)
+            gefundener_username = user.username
+        except User.DoesNotExist:
+            messages.error(
+                request,
+                'Kein Konto mit dieser E-Mail gefunden.'
+            )
+    return render(request, 'accounts/username_vergessen.html', {
+        'gefundener_username': gefundener_username
+    })

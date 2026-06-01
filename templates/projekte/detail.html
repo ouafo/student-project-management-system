@@ -38,10 +38,10 @@
         <nav class="sidebar-menu">
             <a href="{% url 'dashboard' %}">Dashboard</a>
             <a href="{% url 'dashboard' %}">Meine Projekte</a>
-            <a href="#"
+        <!--    <a href="#"
                onclick="openModal(); return false;">
                 Neues Projekt
-            </a>
+            </a> -->
             <a href="{% url 'profil_bearbeiten' %}">Mein Profil</a>
             <a href="{% url 'einstellungen' %}">Einstellungen</a>
         </nav>
@@ -70,7 +70,7 @@
         <div class="breadcrumb">
             <a href="{% url 'dashboard' %}">Dashboard</a>
             <span>›</span>
-            <span class="breadcrumb-active">{{ projekt.name }}</span>
+            <span class="breadcrumb-active">{{ projekt.titel }}</span>
         </div>
 
         <!-- Tab Navigation -->
@@ -117,7 +117,7 @@
         <!-- Aufgaben Header -->
         <div class="projekte-header">
             <h2>Aufgaben ({{ gesamt }})</h2>
-            <a href="#" class="btn-primary">+ Neue Aufgabe</a>
+            <a href="{% url 'aufgabe_erstellen_projekt' projekt.id %}" class="btn-primary">+ Neue Aufgabe</a>
         </div>
 
         <!-- Aufgaben Tabelle -->
@@ -139,7 +139,7 @@
 
                 <!-- Titel -->
                 <div class="col-titel">
-                    <a href="#"
+                    <a href="{% url 'aufgabe_detail' aufgabe.id %}"
                        class="aufgabe-link">
                         {{ aufgabe.titel }}
                     </a>
@@ -204,7 +204,7 @@
             <p>📋</p>
             <p>Noch keine Aufgaben vorhanden.</p>
             <p>Erstelle die erste Aufgabe für dieses Projekt!</p>
-            <a href="#" class="btn-primary">
+            <a href="{% url 'aufgabe_erstellen_projekt' projekt.id %}" class="btn-primary">
                 + Neue Aufgabe erstellen
             </a>
         </div>

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Aufgabe, Kommentar, ChatNachricht
+from .models import Aufgabe
+from kommentare.models import Kommentar
 
 
 class KommentarInline(admin.TabularInline):
@@ -17,14 +18,3 @@ class AufgabeAdmin(admin.ModelAdmin):
     list_filter = ("status", "prioritaet")
     search_fields = ("titel", "beschreibung")
     inlines = [KommentarInline]
-
-
-@admin.register(Kommentar)
-class KommentarAdmin(admin.ModelAdmin):
-    list_display = ("aufgabe", "autor", "erstellt_am")
-    search_fields = ("text",)
-
-
-@admin.register(ChatNachricht)
-class ChatNachrichtAdmin(admin.ModelAdmin):
-    list_display = ("sender", "empfaenger", "erstellt_am")

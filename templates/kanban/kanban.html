@@ -38,10 +38,10 @@
         <nav class="sidebar-menu">
             <a href="{% url 'dashboard' %}">Dashboard</a>
             <a href="{% url 'dashboard' %}">Meine Projekte</a>
-            <a href="#"
+        <!--    <a href="#"
                onclick="openModal(); return false;">
                 Neues Projekt
-            </a>
+            </a> -->
             <a href="{% url 'profil_bearbeiten' %}">Mein Profil</a>
             <a href="{% url 'einstellungen' %}">Einstellungen</a>
         </nav>
@@ -72,7 +72,7 @@
             <a href="{% url 'dashboard' %}">Dashboard</a>
             <span>›</span>
             <a href="{% url 'projekt_detail' projekt.id %}">
-                {{ projekt.name }}
+                {{ projekt.titel }}
             </a>
             <span>›</span>
             <span class="breadcrumb-active">Kanban Board</span>
@@ -192,13 +192,12 @@
         </div>
     </main>
 </div>
-
 <!-- SortableJS Library -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-<!-- Drag & Drop JavaScript -->
+<!-- ===================== DRAG & DROP JAVASCRIPT ===================== -->
 <script>
-    // CSRF Token für Django holen
+    // ✅ CSRF Token für Django – korrekt implementiert
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -216,23 +215,20 @@
         return cookieValue;
     }
 
-    // Status Update an Django senden
+    // ✅ Status Update an Django senden (mit CSRF Token)
     function statusUpdate(aufgabeId, neuerStatus) {
         fetch(`/kanban/aufgabe/${aufgabeId}/status/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
+                'X-CSRFToken': getCookie('csrftoken')  // ← CSRF Token
             },
-            body: JSON.stringify({
-                status: neuerStatus
-            })
+            body: JSON.stringify({ status: neuerStatus })
         })
         .then(response => response.json())
         .then(daten => {
             if (daten.success) {
                 console.log('✅ Status aktualisiert:', neuerStatus);
-                // Spalten Anzahl aktualisieren
                 aktualisiereSpaltenAnzahl();
             } else {
                 console.error('❌ Fehler:', daten.error);
@@ -243,19 +239,16 @@
         });
     }
 
-    // Spalten Anzahl aktualisieren
+    // Spalten-Anzahl nach Drag & Drop aktualisieren
     function aktualisiereSpaltenAnzahl() {
-        const spalten = ['offen', 'in_bearbeitung',
-                        'in_ueberpruefung', 'erledigt'];
+        const spalten = ['offen', 'in_bearbeitung', 'in_ueberpruefung', 'erledigt'];
         spalten.forEach(status => {
             const spalte = document.getElementById(`spalte-${status}`);
-            const count = document.getElementById(`count-${status}`);
+            const count  = document.getElementById(`count-${status}`);
             if (spalte && count) {
-                // Karten zählen (ohne empty-spalte divs)
                 const karten = spalte.querySelectorAll('.aufgabe-karte');
                 count.textContent = karten.length;
 
-                // Empty State anzeigen/verstecken
                 const emptyDiv = spalte.querySelector('.empty-spalte');
                 if (karten.length === 0) {
                     if (!emptyDiv) {
@@ -270,33 +263,26 @@
     }
 
     // SortableJS für jede Spalte initialisieren
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const spalten = document.querySelectorAll('.spalte-inhalt');
 
         spalten.forEach(spalte => {
             new Sortable(spalte, {
-                group: 'kanban',        // Erlaubt zwischen Spalten ziehen
-                animation: 150,          // Animationsgeschwindigkeit
-                ghostClass: 'karte-ghost',   // CSS Klasse beim Ziehen
-                chosenClass: 'karte-chosen', // CSS Klasse wenn ausgewählt
-                dragClass: 'karte-drag',     // CSS Klasse während Drag
+                group:       'kanban',
+                animation:   150,
+                ghostClass:  'karte-ghost',
+                chosenClass: 'karte-chosen',
+                dragClass:   'karte-drag',
 
-                // Wenn Karte losgelassen wird:
-                onEnd: function(event) {
-                    const aufgabeId = event.item.dataset.aufgabeId;
+                onEnd: function (event) {
+                    const aufgabeId  = event.item.dataset.aufgabeId;
                     const neuerStatus = event.to.dataset.status;
                     const alterStatus = event.from.dataset.status;
 
-                    // Nur updaten wenn Status sich geändert hat
                     if (neuerStatus !== alterStatus) {
                         statusUpdate(aufgabeId, neuerStatus);
-                        console.log(
-                            `Aufgabe ${aufgabeId}:
-                            ${alterStatus} → ${neuerStatus}`
-                        );
+                        console.log(`Aufgabe ${aufgabeId}: ${alterStatus} → ${neuerStatus}`);
                     }
-
-                    // Anzahl immer aktualisieren
                     aktualisiereSpaltenAnzahl();
                 }
             });

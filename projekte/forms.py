@@ -1,11 +1,11 @@
 from django import forms
-from accounts.models import Benutzer
+from django.contrib.auth import get_user_model
 from .models import Projekt
-
+User = get_user_model()
 
 class ProjectForm(forms.ModelForm):
     teilnehmer = forms.ModelMultipleChoiceField(
-        queryset=Benutzer.objects.none(),
+        queryset=User.objects.none(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
         label="Teilnehmer einladen"
@@ -18,66 +18,62 @@ class ProjectForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Projekt          # ← Projekt statt Project!
+        model = Projekt
         fields = ['titel', 'beschreibung', 'fortschritt']
+        """labels = {
+            'titel': 'Projektname',
+            'beschreibung': 'Beschreibung',
+        }
+        widgets = {
+            'titel': forms.TextInput(attrs={'placeholder': 'z.B. Design einer Website'}),
+            'beschreibung': forms.Textarea(attrs={'placeholder': 'Beschreibe kurz dein Projekt', 'rows': 3}),
+        }"""
 
-        def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             # Es werden nur User angezeigt, deren Profil das erlaubt
-            self.fields['teilnehmer'].queryset = Benutzer.objects.filter(
+            self.fields['teilnehmer'].queryset = User.objects.filter(
                 profile__in_teilnehmerliste_auffindbar=True
             )
-
 
 class ProfilForm(forms.Form):
     vorname = forms.CharField(
         max_length=50,
-        label='Vorname',
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Vorname',
-            'class': 'f-input'
-        }),
+        label = 'Vorname',
+        widget=forms.TextInput(attrs={'placeholder': 'Vorname',
+                                      'class': 'f-input'}),
     )
     nachname = forms.CharField(
         max_length=50,
         required=False,
-        label='Nachname',
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Nachname',
-            'class': 'f-input'
-        }),
+        label = 'Nachname',
+        widget=forms.TextInput(attrs={'placeholder': 'Nachname',
+                                      'class': 'f-input'}),
     )
     email = forms.EmailField(
         label='E-Mail',
-        widget=forms.TextInput(attrs={
-            'placeholder': 'E-Mail Adresse',
-            'class': 'f-input'
-        }),
+        widget=forms.TextInput(attrs={'placeholder': 'E-Mail Adresse',
+                                      'class': 'f-input'}),
     )
-
 
 class PasswortForm(forms.Form):
     altes_passwort = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': '........',
-            'class': 'f-input'
-        }),
-        label='Aktuelles Passwort'
+        widget=forms.PasswordInput(attrs={'placeholder': '........',
+                                          'class': 'f-input'}),
+        label = 'Aktuelles Passwort'
     )
     neues_passwort = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Neues Passwort',
-            'class': 'f-input'
-        }),
-        label='Neues Passwort',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Neues Passwort',
+                                          'class': 'f-input'}),
+        label = 'Neues Passwort',
         min_length=8
     )
     passwort_bestaetigen = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Passwort wiederholen',
-            'class': 'f-input'
-        }),
+        widget=forms.PasswordInput(attrs={'placeholder': 'Passwort wiederholen',
+                                          'class': 'f-input'}),
+        label='Passwort bestätigen'
     )
+
 
     def clean(self):
         cleaned = super().clean()
@@ -85,12 +81,12 @@ class PasswortForm(forms.Form):
         neu = cleaned.get('neues_passwort')
         bestaetigen = cleaned.get('passwort_bestaetigen')
 
+        # Stimmen neu und Bestätigung überein?
         if neu and bestaetigen and neu != bestaetigen:
-            raise forms.ValidationError(
-                "Die Passwörter stimmen nicht überein."
-            )
+            raise forms.ValidationError("Die Passwörter stimmen nicht überein.")
+
+        # 2.Ist das neue Passwort identisch mit dem alten?
         if alt and neu and alt == neu:
-            raise forms.ValidationError(
-                "Das neue Passwort darf nicht mit dem aktuellen identisch sein."
-            )
+            raise forms.ValidationError("Das neue Passwort darf nicht mit dem aktuellen identisch sein.")
+
         return cleaned

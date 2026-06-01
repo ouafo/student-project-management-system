@@ -240,7 +240,8 @@
                     <div class="progress" style="width: {{ projekt.berechne_fortschritt }}%;"></div>
                     </div>
 
-            <button class="btn-open">Öffnen</button>
+            <button class="btn-open"><a href="{% url 'kanban_board' projekt.id %}"
+                       class="btn-open">Öffnen</a></button>
                 {% if projekt.admin == request.user %}
                 <button class="btn-delete" onclick="confirmDelete({{ projekt.id }}, '{{ projekt.titel|escapejs }}')">Löschen
                 </button>

@@ -1,3 +1,5 @@
+from random import choice
+
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -8,22 +10,25 @@ from aufgaben.models import Aufgabe
 import json
 from projekte.views import get_sidebar_context
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Create your views here.
 @login_required
 def kanban_board(request, projekt_id):
     projekt = get_object_or_404(Projekt, id=projekt_id)
 
     offen = Aufgabe.objects.filter(
-        projekt=projekt, status='offen'
+        projekt=projekt, status=Aufgabe.Status.OFFEN
     )
     in_bearbeitung = Aufgabe.objects.filter(
-        projekt=projekt, status='in_bearbeitung'
+        projekt=projekt, status=Aufgabe.Status.IN_BEARBEITUNG
     )
     in_ueberpruefung = Aufgabe.objects.filter(
-        projekt=projekt, status='in_ueberpruefung'
+        projekt=projekt, status=Aufgabe.Status.IN_UEBERPRUEFUNG
     )
     erledigt = Aufgabe.objects.filter(
-        projekt=projekt, status='erledigt'
+        projekt=projekt, status=Aufgabe.Status.ERLEDIGT
     )
 
     #  Sidebar Context hinzufügen!
@@ -37,16 +42,8 @@ def kanban_board(request, projekt_id):
     })
     return render(request, 'kanban/kanban.html', context)
 
-    return render(request, 'kanban/kanban.html', {
-        'projekt': projekt,
-        'offen': offen,
-        'in_bearbeitung': in_bearbeitung,
-        'in_ueberpruefung': in_ueberpruefung,
-        'erledigt': erledigt,
-    })
 
 
-@csrf_exempt
 @login_required
 @require_POST
 def aufgabe_status_update(request, aufgabe_id):
@@ -55,12 +52,7 @@ def aufgabe_status_update(request, aufgabe_id):
         daten = json.loads(request.body)
         neuer_status = daten.get('status')
 
-        gueltige_status = [
-            'offen',
-            'in_bearbeitung',
-            'in_ueberpruefung',
-            'erledigt'
-        ]
+        gueltige_status = [choice.value for choice in Aufgabe.Status]
 
         if neuer_status not in gueltige_status:
             return JsonResponse({
@@ -69,12 +61,16 @@ def aufgabe_status_update(request, aufgabe_id):
             }, status=400)
 
         aufgabe = get_object_or_404(Aufgabe, id=aufgabe_id)
+        ist_mitglied = aufgabe.projekt.mitgliedschaft_set.filter(user=request.user).exists()
+        ist_admin = (aufgabe.projekt.admin == request.user)
+        if not (ist_mitglied or ist_admin):
+            return JsonResponse({'success': False, 'error': 'Keine Berechtigung!'}, status=403)
         alter_status = aufgabe.status
         aufgabe.status = neuer_status
         aufgabe.save()
 
         aufgabe.refresh_from_db()
-        print(f"✅ Aufgabe {aufgabe_id}: {alter_status} → {aufgabe.status}")
+        logger.info(f"Aufgabe {aufgabe_id}: {alter_status} → {aufgabe.status}")
 
         return JsonResponse({
             'success': True,
@@ -89,7 +85,7 @@ def aufgabe_status_update(request, aufgabe_id):
             'error': 'Ungültige Daten!'
         }, status=400)
     except Exception as e:
-        print(f"❌ Fehler: {str(e)}")
+        logger.error(f"Fehler bei Status-Update: {str(e)}")
         return JsonResponse({
             'success': False,
             'error': str(e)
