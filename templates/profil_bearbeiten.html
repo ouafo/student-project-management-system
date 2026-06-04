@@ -1,0 +1,243 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil bearbeiten</title>
+    <link rel="stylesheet" href="{% static 'profil_bearbeiten.css' %}">
+</head>
+<body>
+
+{% if messages %}
+<div class="toast-container">
+    {% for message in messages %}
+    <div class="toast {% if message.tags == 'error' %}toast-error{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="main-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="logo">Boardify</h2>
+            <div class="profil">
+                <div class="avatar" style="{% if request.user.profile.avatar_bild %} background: url('{{ request.user.profile.avatar_bild.url }}') center/cover; {% else %} background: {{ request.user.profile.avatar_farbe }}; {% endif %}">
+                    {% if not request.user.profile.avatar_bild %}
+                        {{ avatar }}
+                    {% endif %}
+                </div>
+                <div class="user-info">
+                    <strong>{{ vorname }}</strong>
+                    <small>{{ request.user.email }}</small>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'dashboard' %}">Meine Projekte</a>
+                <a href="#">Neues Projekt</a>
+                <a href="{% url 'profil_bearbeiten' %}">Mein Profil</a>
+                <a href="{% url 'einstellungen' %}">Einstellungen</a>
+            </nav>
+        </div>
+        <div class="sidebar-bottom">
+            <div class="sidebar-item">
+                <img src="{% static 'images/benachrichtigung.png' %}" alt="Benachrichtigung" class="icon">
+                <a href="#">Benachrichtigungen</a>
+            </div>
+            <div class="sidebar-item">
+                <img src="{% static 'images/logout.png' %}" alt="Abmelden" class="icon">
+                <a href="#" class="logout">Abmelden</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="content">
+
+        <div class="welcome-banner">
+            <div class="topbar">
+                <a href="{% url 'dashboard' %}" class="btn-back">
+                    ← Zur Projektsicht
+                </a>
+            </div>
+            <h1>Profil bearbeiten</h1>
+            <p>Verwalte deine persönlichen Daten, dein Passwort und deinen Account.</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="avatarForm">
+            {% csrf_token %}
+            <input type="hidden" name="aktion" value="avatar_update">
+            <input type="hidden" name="avatar_farbe" id="selectedColorInput" value="{{ profile.avatar_farbe }}">
+            <input type="file" name="avatar_datei" id="avatarInput" style="display:none;" onchange="this.form.submit()">
+
+            <div class="section glass">
+                <div class="sec-head">
+                    <div class="sec-icon ic-b">
+                        <img src="{% static 'images/bild.png' %}" alt="Bild" class="icon">
+                    </div>
+                    <div>
+                        <div class="sec-title">Avatar</div>
+                        <div class="sec-sub">Foto hochladen oder Initialen-Farbe wählen</div>
+                    </div>
+                </div>
+                <div class="sec-body">
+                    <div class="avatar-row">
+                        <div class="avatar-big" id="avatarCircle"
+                             style="{% if profile.avatar_bild %} background: url('{{ profile.avatar_bild.url }}') center/cover; {% else %} background: {{ profile.avatar_farbe }}; {% endif %}">
+                            {% if not profile.avatar_bild %}
+                                {{ avatar }}
+                            {% endif %}
+                        </div>
+
+                        <div class="avatar-actions">
+                            <div class="upload-row">
+                                <button class="btn-up" type="button" onclick="document.getElementById('avatarInput').click()">
+                                    <img src="{% static 'images/ordner.png' %}" alt="Ordner" class="icon">
+                                    Bild hochladen
+                                </button>
+                                <button class="btn-rm" type="submit" name="aktion" value="avatar_loeschen">Bild entfernen</button>
+                            </div>
+
+                            <div class="color-row">
+                                <span class="color-label">Farbe:</span>
+                                <div class="dot {% if profile.avatar_farbe == '#3b82f6' %}sel{% endif %}" style="background:#3b82f6;" onclick="updateAvatarColor('#3b82f6', this)"></div>
+                                <div class="dot {% if profile.avatar_farbe == '#8b5cf6' %}sel{% endif %}" style="background:#8b5cf6;" onclick="updateAvatarColor('#8b5cf6', this)"></div>
+                                <div class="dot {% if profile.avatar_farbe == '#ec4899' %}sel{% endif %}" style="background:#ec4899;" onclick="updateAvatarColor('#ec4899', this)"></div>
+                                <div class="dot {% if profile.avatar_farbe == '#10b981' %}sel{% endif %}" style="background:#10b981;" onclick="updateAvatarColor('#10b981', this)"></div>
+                                <div class="dot {% if profile.avatar_farbe == '#f59e0b' %}sel{% endif %}" style="background:#f59e0b;" onclick="updateAvatarColor('#f59e0b', this)"></div>
+                                <div class="dot {% if profile.avatar_farbe == '#ef4444' %}sel{% endif %}" style="background:#ef4444;" onclick="updateAvatarColor('#ef4444', this)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="aktion" value="profil">
+            <div class="section glass">
+                <div class="sec-head">
+                    <div class="sec-icon ic-b">
+                        <img src="{% static 'images/username.png' %}" alt="User" class="icon">
+                    </div>
+                    <div>
+                        <div class="sec-title">Persönliche Daten</div>
+                        <div class="sec-sub">Name und E-Mail Adresse anpassen</div>
+                    </div>
+                </div>
+                <div class="sec-body">
+                    <div class="form-grid">
+                        <div>
+                            <div class="f-label">Vorname</div>
+                            {{ profil_form.vorname }}
+                        </div>
+                        <div>
+                            <div class="f-label">Nachname</div>
+                            {{ profil_form.nachname }}
+                        </div>
+                        <div class="fg-full">
+                            <div class="f-label">E-Mail</div>
+                            {{ profil_form.email }}
+                        </div>
+                    </div>
+                    <div class="save-row">
+                        <a href="{% url 'dashboard' %}" class="btn-abort">Abbrechen</a>
+                        <button type="submit" class="btn-save">Änderungen speichern</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="aktion" value="passwort">
+            <div class="section glass">
+                <div class="sec-head">
+                    <div class="sec-icon ic-g">
+                        <img src="{% static 'images/schloss.png' %}" alt="Passwort" class="icon">
+                    </div>
+                    <div>
+                        <div class="sec-title">Passwort ändern</div>
+                        <div class="sec-sub">Mindestens 8 Zeichen, 1 Großbuchstabe, 1 Zahl</div>
+                    </div>
+                </div>
+                <div class="sec-body">
+                    <div class="pw-col">
+                        <div class="pw-field">
+                            <div class="f-label">Aktuelles Passwort</div>
+                            {{ passwort_form.altes_passwort }}
+                        </div>
+                        <div class="two-col">
+                            <div class="pw-field">
+                                <div class="f-label">Neues Passwort</div>
+                                {{ passwort_form.neues_passwort }}
+                            </div>
+                            <div class="pw-field">
+                                <div class="f-label">Bestätigen</div>
+                                {{ passwort_form.passwort_bestaetigen }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="save-row">
+                        <button type="submit" class="btn-save">Passwort aktualisieren</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="section glass-danger">
+            <div class="sec-head">
+                <div class="sec-icon ic-r">
+                    <img src="{% static 'images/alert.png' %}" alt="Warnung" class="icon">
+                </div>
+                <div>
+                    <div class="sec-title danger-title">Konto löschen</div>
+                    <div class="sec-sub">Unwiderrufliche Aktion</div>
+                </div>
+            </div>
+            <div class="danger-row">
+                <div class="danger-text">
+                    <strong>Diese Aktion kann nicht rückgängig gemacht werden!</strong>
+                    Alle Projekte, Aufgaben und Daten werden permanent gelöscht.
+                </div>
+                <form method="POST" onsubmit="return confirm('Wirklich löschen?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="aktion" value="account_loeschen">
+                    <button type="submit" class="btn-danger">Account löschen</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+function updateAvatarColor(color, el) {
+    const circle = document.getElementById('avatarCircle');
+    const colorInput = document.getElementById('selectedColorInput');
+
+    circle.style.backgroundImage = 'none';
+    circle.style.backgroundColor = color;
+    circle.innerHTML = "{{ avatar }}";
+
+    colorInput.value = color;
+    document.querySelectorAll('.dot').forEach(d => d.classList.remove('sel'));
+    el.classList.add('sel');
+
+    // Farbe sofort speichern
+    el.closest('form').submit();
+}
+
+// Toasts automatisch ausblenden
+setTimeout(() => {
+    document.querySelectorAll('.toast').forEach(t => {
+        t.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(20px)';
+    });
+}, 4000);
+</script>
+</body>
+</html>

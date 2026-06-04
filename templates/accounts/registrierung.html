@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrierung | Boardify</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'Register.css' %}">
+</head>
+<body>
+<main class="auth-page">
+    <section class="auth-card">
+        <header class="auth-header">
+            <h1 class="auth-title">Boardify</h1>
+            <p class="auth-subtitle">Erstelle dein Konto</p>
+        </header>
+
+        {% if messages %}
+        <div class="auth-messages">
+            {% for message in messages %}
+            <div class="auth-message {% if message.tags == 'error' %}error{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form class="auth-form" method="POST" novalidate>
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Vorname <span class="required">*</span></label>
+                    {{ form.vorname }}
+                    {% if form.vorname.errors %}
+                    <span class="field-error">{{ form.vorname.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label>Nachname</label>
+                    {{ form.nachname }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Benutzername <span class="required">*</span></label>
+                {{ form.username }}
+                <span class="field-hint">Eindeutig, keine Leerzeichen wird beim Login verwendet</span>
+                {% if form.username.errors %}
+                <span class="field-error">{{ form.username.errors.0 }}</span>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label>E-Mail <span class="required">*</span></label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                <span class="field-error">{{ form.email.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Passwort <span class="required">*</span></label>
+                {{ form.passwort }}
+                <div class="pw-strength-bar">
+                    <div class="pw-bar" id="bar1"></div>
+                    <div class="pw-bar" id="bar2"></div>
+                    <div class="pw-bar" id="bar3"></div>
+                    <div class="pw-bar" id="bar4"></div>
+                </div>
+                <div class="pw-checks">
+                    <span id="check-len"  class="pw-check">✗ Mindestens 8 Zeichen</span>
+                    <span id="check-upper" class="pw-check">✗ 1 Großbuchstabe</span>
+                    <span id="check-num"  class="pw-check">✗ 1 Zahl</span>
+                </div>
+                {% if form.passwort.errors %}
+                <span class="field-error">{{ form.passwort.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Passwort bestätigen <span class="required">*</span></label>
+                {{ form.passwort_bestaetigen }}
+                {% if form.passwort_bestaetigen.errors %}
+                <span class="field-error">{{ form.passwort_bestaetigen.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="form-error-box">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn-primary">Registrieren</button>
+        </form>
+
+        <p class="auth-footer-text">
+            Hast du schon ein Konto?
+            <a href="{% url 'login' %}" class="auth-link">Jetzt anmelden</a>
+        </p>
+    </section>
+</main>
+</body>
+
+<script>
+const pwInput = document.querySelector('input[name="passwort"]');
+const bars = [
+    document.getElementById('bar1'),
+    document.getElementById('bar2'),
+    document.getElementById('bar3'),
+    document.getElementById('bar4'),
+];
+const checkLen   = document.getElementById('check-len');
+const checkUpper = document.getElementById('check-upper');
+const checkNum   = document.getElementById('check-num');
+
+pwInput.addEventListener('input', () => {
+    const pw = pwInput.value;
+    const hasLen   = pw.length >= 8;
+    const hasUpper = /[A-Z]/.test(pw);
+    const hasNum   = /[0-9]/.test(pw);
+
+    // Checks aktualisieren
+    updateCheck(checkLen,   hasLen,   '✓ Mindestens 8 Zeichen', '✗ Mindestens 8 Zeichen');
+    updateCheck(checkUpper, hasUpper, '✓ 1 Großbuchstabe',      '✗ 1 Großbuchstabe');
+    updateCheck(checkNum,   hasNum,   '✓ 1 Zahl',               '✗ 1 Zahl');
+
+    // Stärke berechnen
+    const score = [hasLen, hasUpper, hasNum, pw.length >= 12].filter(Boolean).length;
+    const colors = ['#ef4444','#f59e0b','#3b82f6','#22c55e'];
+    bars.forEach((bar, i) => {
+        bar.style.background = i < score ? colors[score - 1] : 'rgba(255,255,255,0.1)';
+    });
+});
+
+function updateCheck(el, ok, textOk, textFail) {
+    el.textContent = ok ? textOk : textFail;
+    el.classList.toggle('pw-check-ok',   ok);
+    el.classList.toggle('pw-check-fail', !ok);
+}
+</script>
+</html>

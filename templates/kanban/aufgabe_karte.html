@@ -1,0 +1,31 @@
+<div class="aufgabe-karte"
+     data-aufgabe-id="{{ aufgabe.id }}">
+
+    <div class="drag-handle">⠿</div>
+
+    <!--  Klick auf Titel → Detail Seite -->
+    <a href="{% url 'aufgabe_detail' aufgabe.id %}">
+        <h4 class="aufgabe-titel">{{ aufgabe.titel }}</h4>
+    </a>
+
+    <span class="prioritaet-badge prioritaet-{{ aufgabe.prioritaet }}">
+        {{ aufgabe.get_prioritaet_display }}
+    </span>
+
+    <div class="aufgabe-footer">
+        {% if aufgabe.zugewiesen_an %}
+            <div class="aufgabe-avatar"
+                 title="{{ aufgabe.zugewiesen_an.username }}">
+                {{ aufgabe.zugewiesen_an.username|first|upper }}
+            </div>
+        {% else %}
+            <div class="aufgabe-avatar leer">?</div>
+        {% endif %}
+
+        {% if aufgabe.deadline %}
+            <span class="deadline">
+                📅 {{ aufgabe.deadline|date:"j.n.Y" }}
+            </span>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,799 @@
+CSS for Realisierung projekt
+/* ================================
+   BOARDIFY — Global Styles
+   ================================ */
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F8FAFC;
+    color: #1E293B;
+}
+
+/* ================================
+   AUTH PAGES (Login & Register)
+   ================================ */
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #F8FAFC;
+}
+
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1E293B;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.auth-subtitle {
+    color: #64748B;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.auth-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 4px;
+}
+
+.auth-desc {
+    color: #3B82F6;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+/* ================================
+   FORMS
+   ================================ */
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.form-input,
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1E293B;
+    background: white;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus,
+input:focus {
+    outline: none;
+    border-color: #3B82F6;
+}
+
+.error {
+    color: #EF4444;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* ================================
+   BUTTONS
+   ================================ */
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #3B82F6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #2563EB;
+}
+
+/* ================================
+   AUTH LINK
+   ================================ */
+
+.auth-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #64748B;
+}
+
+.auth-link a {
+    color: #3B82F6;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ================================
+   MESSAGES
+   ================================ */
+
+.messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.message {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.message.success {
+    background-color: #22C55E;
+    color: white;
+}
+
+.message.error {
+    background-color: #EF4444;
+    color: white;
+}
+
+.message.info {
+    background-color: #3B82F6;
+    color: white;
+}
+
+/* ================================
+   DASHBOARD
+   ================================ */
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ================================
+   SIDEBAR
+   ================================ */
+
+.sidebar {
+    width: 250px;
+    background-color: #1E293B;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    position: fixed;
+    height: 100vh;
+}
+
+.sidebar-logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    padding: 0 24px;
+    margin-bottom: 24px;
+}
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #334155;
+    border-bottom: 1px solid #334155;
+    margin-bottom: 16px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #3B82F6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.user-email {
+    font-size: 12px;
+    color: #94A3B8;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 0 12px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #94A3B8;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 4px;
+    transition: all 0.2s;
+}
+
+.nav-item:hover {
+    background-color: #334155;
+    color: white;
+}
+
+.nav-item.active {
+    background-color: #3B82F6;
+    color: white;
+}
+
+.sidebar-bottom {
+    padding: 0 12px;
+    border-top: 1px solid #334155;
+    padding-top: 16px;
+}
+
+.nav-item.logout {
+    color: #EF4444;
+}
+
+.nav-item.logout:hover {
+    background-color: #EF444420;
+    color: #EF4444;
+}
+
+/* ================================
+   MAIN CONTENT
+   ================================ */
+
+.main-content {
+    margin-left: 250px;
+    flex: 1;
+    padding: 32px;
+}
+
+/* ================================
+   GREETING CARD
+   ================================ */
+
+.greeting-card {
+    background-color: #3B82F6;
+    color: white;
+    padding: 24px 32px;
+    border-radius: 12px;
+    margin-bottom: 32px;
+}
+
+.greeting-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.greeting-card p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* ================================
+   PROJEKTE HEADER
+   ================================ */
+
+.projekte-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.projekte-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.projekte-header .btn-primary {
+    width: auto;
+    padding: 10px 20px;
+}
+
+/* ================================
+   EMPTY STATE
+   ================================ */
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748B;
+}
+
+.empty-state p:first-child {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-state p:nth-child(2) {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 8px;
+}
+
+.empty-state p:nth-child(3) {
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.empty-state .btn-primary {
+    width: auto;
+    display: inline-block;
+    padding: 12px 24px;
+}
+
+
+/* ================================
+   BREADCRUMB
+   ================================ */
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    color: #3B82F6;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-active {
+    color: #1E293B;
+    font-weight: 600;
+}
+
+/* ================================
+   TABS
+   ================================ */
+
+.tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #E2E8F0;
+    margin-bottom: 24px;
+}
+
+.tab {
+    padding: 12px 24px;
+    text-decoration: none;
+    color: #64748B;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: #3B82F6;
+}
+
+.tab.active {
+    color: #3B82F6;
+    border-bottom-color: #3B82F6;
+    font-weight: 600;
+}
+
+/* ================================
+   KANBAN HEADER
+   ================================ */
+
+.kanban-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+}
+
+.kanban-header .btn-primary {
+    width: auto;
+    padding: 10px 20px;
+}
+
+/* ================================
+   KANBAN BOARD
+   ================================ */
+
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+/* ================================
+   KANBAN SPALTE
+   ================================ */
+
+.kanban-spalte {
+    background-color: #F1F5F9;
+    border-radius: 12px;
+    padding: 16px;
+    min-height: 400px;
+}
+
+.spalte-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.spalte-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+.spalte-count {
+    background-color: #E2E8F0;
+    color: #64748B;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.spalte-count.warning {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.spalte-count.orange {
+    background-color: #FFEDD5;
+    color: #EA580C;
+}
+
+.spalte-count.success {
+    background-color: #DCFCE7;
+    color: #16A34A;
+}
+
+.empty-spalte {
+    text-align: center;
+    color: #94A3B8;
+    font-size: 13px;
+    padding: 20px;
+}
+
+/* ================================
+   AUFGABE KARTE
+   ================================ */
+
+.aufgabe-karte {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+
+.aufgabe-karte:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.drag-handle {
+    color: #CBD5E1;
+    font-size: 16px;
+    margin-bottom: 8px;
+    cursor: grab;
+}
+
+.aufgabe-titel {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 10px;
+}
+
+/* ================================
+   PRIORITÄT BADGES
+   ================================ */
+
+.prioritaet-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.prioritaet-hoch {
+    background-color: #FEE2E2;
+    color: #EF4444;
+}
+
+.prioritaet-mittel {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.prioritaet-niedrig {
+    background-color: #DCFCE7;
+    color: #16A34A;
+}
+
+/* ================================
+   AUFGABE FOOTER
+   ================================ */
+
+.aufgabe-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.aufgabe-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #3B82F6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.aufgabe-avatar.leer {
+    background-color: #E2E8F0;
+    color: #94A3B8;
+}
+
+.deadline {
+    font-size: 12px;
+    color: #64748B;
+}
+
+.deadline-ueberfaellig {
+    color: #EF4444 !important;
+    font-weight: 600;
+}
+
+/* ================================
+   DRAG & DROP
+   ================================ */
+
+.spalte-inhalt {
+    min-height: 100px;
+}
+
+/* Karte wird gezogen */
+.karte-ghost {
+    opacity: 0.4;
+    background: #E2E8F0;
+    border: 2px dashed #3B82F6;
+    border-radius: 8px;
+}
+
+/* Karte ist ausgewählt */
+.karte-chosen {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    transform: rotate(2deg);
+}
+
+/* Karte während Drag */
+.karte-drag {
+    opacity: 0.9;
+    cursor: grabbing !important;
+}
+
+/* Spalte leuchtet auf wenn Karte drüber */
+.spalte-inhalt.sortable-over {
+    background-color: #EFF6FF;
+    border-radius: 8px;
+}
+
+/* ================================
+   AUFGABEN STATISTIKEN
+   ================================ */
+
+.aufgaben-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-karte {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    flex: 1;
+}
+
+.stat-zahl {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1E293B;
+}
+
+.stat-zahl.blau { color: #3B82F6; }
+.stat-zahl.orange { color: #F59E0B; }
+.stat-zahl.gelb { color: #EA580C; }
+.stat-zahl.gruen { color: #22C55E; }
+
+.stat-label {
+    font-size: 12px;
+    color: #64748B;
+    font-weight: 500;
+}
+
+/* ================================
+   AUFGABEN TABELLE
+   ================================ */
+
+.aufgaben-tabelle {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.tabelle-header {
+    display: grid;
+    grid-template-columns: 3fr 1.5fr 1fr 1.5fr 1.5fr;
+    padding: 12px 20px;
+    background-color: #F8FAFC;
+    border-bottom: 1px solid #E2E8F0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748B;
+    text-transform: uppercase;
+}
+
+.tabelle-zeile {
+    display: grid;
+    grid-template-columns: 3fr 1.5fr 1fr 1.5fr 1.5fr;
+    padding: 16px 20px;
+    border-bottom: 1px solid #F1F5F9;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.tabelle-zeile:hover {
+    background-color: #F8FAFC;
+}
+
+.tabelle-zeile:last-child {
+    border-bottom: none;
+}
+
+.aufgabe-link {
+    color: #1E293B;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.aufgabe-link:hover {
+    color: #3B82F6;
+}
+
+/* ================================
+   STATUS BADGES
+   ================================ */
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-offen {
+    background-color: #EFF6FF;
+    color: #3B82F6;
+}
+
+.status-in_bearbeitung {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.status-in_ueberpruefung {
+    background-color: #FFEDD5;
+    color: #EA580C;
+}
+
+.status-erledigt {
+    background-color: #DCFCE7;
+    color: #16A34A;
+}
+
+/* ================================
+   ZUGEWIESEN USER
+   ================================ */
+
+.zugewiesen-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #1E293B;
+}
+
+.aufgabe-avatar.small {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+}
+
+.nicht-zugewiesen {
+    color: #94A3B8;
+    font-size: 14px;
+}

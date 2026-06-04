@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suchergebnisse für "{{ query }}"</title>
+    <link class="css-theme" rel="stylesheet" href="{% static 'suche_ergebnisse.css' %}">
+    <link class="css-theme" rel="stylesheet" href="{% static 'projekt_view.css' %}">
+</head>
+<body>
+
+    <header class="search-header">
+        <div class="header-content">
+            <a href="{% url 'dashboard' %}" class="back-link">← Zur Projektübersicht</a>
+            <h1>Suchergebnisse für: "{{ query }}"</h1>
+            <div class="search-stats">
+                Es wurden <strong>{{ projekt_ergebnisse|length }}</strong> Projekte und <strong>{{ profil_ergebnisse|length }}</strong> Profile gefunden.
+            </div>
+        </div>
+    </header>
+
+    <div class="search-container">
+
+        <section class="search-section">
+            <h2 class="section-title"><img src="{% static 'images/ordner.png' %}" alt="" class="modal-icon"> Gefundene Projekte</h2>
+            {% if projekt_ergebnisse %}
+                <div class="project-grid">
+                    {% for projekt in projekt_ergebnisse %}
+                        <div class="project-card">
+                            <h3>{{ projekt.titel }}</h3>
+                            <p>{{ projekt.beschreibung }}</p>
+
+                            <div class="progress-info">
+                                <span>Fortschritt</span>
+                                <span>{{ projekt.berechne_fortschritt }}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" data-progress-width="{{ projekt.berechne_fortschritt }}"></div>
+                            </div>
+
+                            <a href="{% url 'projekt_detail' projekt.id %}" class="btn-open">Projekt öffnen</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-message">Keine passenden Projekte gefunden oder du besitzt nicht die nötigen Zugriffsrechte.</p>
+            {% endif %}
+        </section>
+
+        <section class="search-section">
+            <h2 class="section-title"><img src="{% static 'images/benutzer.png' %}" alt="" class="modal-icon"> Gefundene Profile</h2>
+            {% if profil_ergebnisse %}
+                <div class="user-list">
+                    {% for user in profil_ergebnisse %}
+                        <div class="user-card"
+                             onclick="openDynamicProfilModal(this)"
+                             data-username="{{ user.username }}"
+                             data-fullname="{{ user.get_full_name|default:user.username }}"
+                             data-email="{{ user.email }}"
+                             data-avatar-color="{{ user.profile.avatar_farbe|default:'#0284c7' }}"
+                             data-avatar-image="{% if user.profile.avatar_bild %}{{ user.profile.avatar_bild.url }}{% endif %}"
+                             data-is-self="{% if user == request.user %}true{% else %}false{% endif %}"
+                             data-member-count="{{ user.mitgliedschaft_set.count|default:0 }}"
+                             data-admin-count="{{ user.admin_projekte.count|default:0 }}">
+
+                            <div class="user-avatar card-avatar-target"></div>
+
+                            <div class="user-info">
+                                <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                <small>{{ user.email }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-message">Keine öffentlichen Profile zu diesem Suchbegriff gefunden.</p>
+            {% endif %}
+        </section>
+
+    </div>
+
+    <div id="profilModal" class="modal-overlay">
+        <div class="modal-box profil-modal-box">
+
+            <div class="profil-banner">
+                <button class="modal-close profil-close" onclick="closeProfilModal()">✕</button>
+                <div id="modalAvatar" class="profil-banner-avatar"></div>
+                <div id="modalFullName" class="profil-banner-name"></div>
+                <div id="modalEmail" class="profil-banner-email"></div>
+            </div>
+
+            <div class="profil-stats-clean">
+                <div class="stat-item">
+                    <img src="{% static 'images/ordner.png' %}" alt="" class="modal-icon">
+                    <span id="modalProjectCount" class="stat-number">0</span>
+                    <span>beteiligte Projekte</span>
+                </div>
+                <div class="stat-item">
+                    <img src="{% static 'images/admin.png' %}" alt="" class="modal-icon">
+                    <span id="modalAdminCount" class="stat-number">0</span>
+                    <span>davon als Admin</span>
+                </div>
+            </div>
+
+            <div class="profil-motivation">
+                <span class="motivation-emoji"><img src="{% static 'images/gratulation.png' %}" alt="Motivation" class="modal-icon"></span>
+                <p>Teammitglied auf Boardify.</p>
+            </div>
+
+            <div class="profil-info-box">
+                <div class="profil-info-row">
+                    <span class="profil-info-label"><img src="{% static 'images/username.png' %}" alt="Username" class="modal-icon"> Benutzername</span>
+                    <span id="modalInfoUsername" class="profil-info-value"></span>
+                </div>
+                <div class="profil-info-row">
+                    <span class="profil-info-label"><img src="{% static 'images/mail.png' %}" alt="Mail" class="modal-icon"> E-Mail</span>
+                    <span id="modalInfoEmail" class="profil-info-value"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeProfilModal()">Schließen</button>
+                <button type="button" id="modalEditBtn" class="btn-edit-profil btn-edit-profil-hidden"
+                        onclick="window.location='{% url 'profil_bearbeiten' %}'">Profil bearbeiten</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Funktion: Holt die Initialen zuverlässig aus dem vollen Namen (z.B. "adele Mamto" -> "AM")
+        function getInitialenAusName(fullname, username) {
+            let nameZumPruefen = (fullname && fullname.trim() !== "") ? fullname.trim() : username;
+            if (!nameZumPruefen) return "??";
+
+            let teile = nameZumPruefen.split(/\s+/);
+
+            if (teile.length >= 2) {
+                return (teile[0].charAt(0) + teile[1].charAt(0)).toUpperCase();
+            } else if (teile[0].length >= 2) {
+                return teile[0].substring(0, 2).toUpperCase();
+            }
+            return teile[0].charAt(0).toUpperCase();
+        }
+
+        // 2. Event: Wird ausgeführt, sobald die Seite geladen ist
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialen und Background-Styles für Avatare auf den Karten setzen
+            const cards = document.querySelectorAll('.user-card');
+            cards.forEach(card => {
+                const avatarDiv = card.querySelector('.card-avatar-target');
+                const bgImage = card.getAttribute('data-avatar-image');
+                const color = card.getAttribute('data-avatar-color');
+
+                if (bgImage && bgImage !== "") {
+                    avatarDiv.style.background = `url('${bgImage}') center/cover`;
+                } else {
+                    avatarDiv.style.background = color;
+                    // Wir nutzen den Namen direkt aus dem Text der Karte für das perfekte "AM"
+                    const nameElement = card.querySelector('.user-info strong');
+                    const fullname = nameElement ? nameElement.innerText : card.getAttribute('data-fullname');
+                    const un = card.getAttribute('data-username');
+
+                    avatarDiv.innerText = getInitialenAusName(fullname, un);
+                }
+            });
+
+            // Fortschrittsbalken der Projekte dynamisch befüllen
+            const progressBars = document.querySelectorAll('.progress');
+            progressBars.forEach(bar => {
+                const width = bar.getAttribute('data-progress-width');
+                bar.style.width = width + '%';
+            });
+        });
+
+        // 3. Funktion: Modal öffnen, Werte korrekt zusammenrechnen und eintragen
+        function openDynamicProfilModal(element) {
+            const username = element.getAttribute('data-username');
+            const fullname = element.getAttribute('data-fullname');
+            const email = element.getAttribute('data-email');
+            const color = element.getAttribute('data-avatar-color');
+            const bgImage = element.getAttribute('data-avatar-image');
+            const isSelf = element.getAttribute('data-is-self') === 'true';
+
+            // Werte auslesen und mathematisch korrekt als Zahlen interpretieren
+            let memberCount = parseInt(element.getAttribute('data-member-count')) || 0;
+            let adminCount = parseInt(element.getAttribute('data-admin-count')) || 0;
+
+            // Summe bilden, damit Admin-Projekte mitgezählt werden
+            let totalProjects = memberCount + adminCount;
+
+            // Texte ins Modal schreiben
+            document.getElementById('modalFullName').innerText = fullname;
+            document.getElementById('modalEmail').innerText = email;
+            document.getElementById('modalInfoUsername').innerText = username;
+            document.getElementById('modalInfoEmail').innerText = email;
+
+            // Berechnete Zahlen ins Modal schreiben
+            document.getElementById('modalProjectCount').innerText = totalProjects;
+            document.getElementById('modalAdminCount').innerText = adminCount;
+
+            // Avatar im Modal steuern
+            const modalAvatar = document.getElementById('modalAvatar');
+            if (bgImage && bgImage !== "") {
+                modalAvatar.style.background = `url('${bgImage}') center/cover`;
+                modalAvatar.innerText = "";
+            } else {
+                modalAvatar.style.background = color;
+                modalAvatar.innerText = getInitialenAusName(fullname, username);
+            }
+
+            // Bearbeiten-Button anzeigen, falls man sein eigenes Profil anschaut
+            const editBtn = document.getElementById('modalEditBtn');
+            if (isSelf) {
+                editBtn.style.display = 'block';
+            } else {
+                editBtn.style.display = 'none';
+            }
+
+            document.getElementById("profilModal").classList.add("active");
+        }
+
+        // 4. Funktion: Modal schließen
+        function closeProfilModal() {
+            document.getElementById("profilModal").classList.remove("active");
+        }
+
+        // Schließen beim Klick auf den grauen Hintergrund
+        document.getElementById("profilModal").addEventListener("click", function(e) {
+            if (e.target === this) {
+                closeProfilModal();
+            }
+        });
+    </script>
+
+</body>
+</html>
