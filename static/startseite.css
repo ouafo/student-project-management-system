@@ -2,26 +2,29 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  background-color:rgb(26 46 53 / 0.28);
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: url("../static/images/background_startseite.jpg") no-repeat center;
+  background-size:cover;
+  color: #0f172a;
+  background-color: #0b1120;
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #004aad;
+  background-color: #e5e7eb;
   padding: 1rem 2rem;
 }
 
 .logo {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #fff;
+  letter-spacing: 0.04em;
 }
 
 .nav-links {
@@ -45,20 +48,26 @@ body {
 }
 
 .btn {
-  background-color:burlywood;
-  color:#004aad;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.5rem 1rem;
   border-radius: 5px;
   font-weight: bold;
+  font-size: 0.95rem;
   text-decoration: none;
+  border: 1px solid transparent;
 }
 
 .hero {
   text-align: center;
   padding: 6rem 2rem;
-  background: linear-gradient(to right, #004aad, #007bff);
-  color: #fff;
+ /*background: linear-gradient(to right, #004aad, #007bff);*/
+  color: rgba(15,23,42,0.78);
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+
+
 }
 
 .hero h1 {
@@ -80,12 +89,13 @@ body {
   font-weight: bold;
 }
 .features h2 {
-  color: #004aad;
+  color: #f9fafb;
   margin-bottom: 2rem;
 }
 .features {
-  padding: 4rem 2rem;
+  padding: 8rem 2rem;
   text-align: center;
+
 }
 
 .feature-grid {
@@ -96,11 +106,12 @@ body {
 }
 
 .feature {
-  background-color: #fff;
+  background-color: #cbd5f5;
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: transform 0.3s;
+
 }
 .feature:hover {
   transform: translateY(-5px);
