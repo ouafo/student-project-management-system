@@ -17,6 +17,7 @@ urlpatterns = [
     path('kanban/', include('kanban.urls')),
     path('kommentare/', include('kommentare.urls')),
     path('chat/', include('chat.urls')),
+    path('', include('chat.urls')),
     path('accounts/password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
 ]
 

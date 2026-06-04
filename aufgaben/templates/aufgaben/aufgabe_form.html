@@ -27,28 +27,20 @@
 
         <nav class="sidebar-nav">
             <a href="{% url 'dashboard' %}" class="nav-item">
-                ⌂ Dashboard
+                Dashboard
             </a>
             <a href="{% url 'dashboard' %}" class="nav-item">
-                ▭ Meine Projekte
+                Meine Projekte
             </a>
             <a href="{% url 'aufgabe_erstellen' %}"
                class="nav-item {% if not aufgabe %}active{% endif %}">
-                ⊕ Neue Aufgabe
+                Neue Aufgabe
             </a>
-            <a href="{% url 'profil_bearbeiten' %}" class="nav-item">
-                ♙ Mein Profil
-            </a>
-            <a href="{% url 'einstellungen' %}" class="nav-item">
-                ⚙ Einstellungen
-            </a>
+
         </nav>
 
         <div class="sidebar-bottom">
-            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
-            <a href="{% url 'logout' %}" class="nav-item logout">
-                ⇱ Abmelden
-            </a>
+
         </div>
     </aside>
 

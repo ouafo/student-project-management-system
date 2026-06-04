@@ -1,31 +1,53 @@
-from django.contrib import messages
+
+import logging
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
-from .forms import  ChatNachrichtForm
+from django.contrib.auth import get_user_model
+from projekte.models import Projekt, Mitgliedschaft
 from .models import ChatNachricht
-# Create your views here.
+
+logger = logging.getLogger(__name__)
+
 @login_required
-def chat_view(request):
-    """Chat Nachrichten"""
+def chat_view(request, projekt_id):
+    projekt = get_object_or_404(Projekt, id=projekt_id)
+
+    # ── Zugriffsprüfung: nur Projektmitglieder ─────────────────
+    ist_mitglied = Mitgliedschaft.objects.filter(
+        projekt=projekt,
+        user=request.user
+    ).exists()
+
+    if not ist_mitglied:
+        logger.warning(
+            "Benutzer %s hat versucht, auf Chat von Projekt %s zuzugreifen.",
+            request.user.username, projekt_id
+        )
+        return redirect('dashboard')
+
+    # ── POST: Nachricht speichern ───────────────────────────────
+    if request.method == 'POST':
+        text = request.POST.get('text', '').strip()
+        if text:
+            ChatNachricht.objects.create(
+                projekt=projekt,
+                sender=request.user,
+                text=text
+            )
+        return redirect('chat', projekt_id=projekt_id)
+
+    # ── GET: Nachrichten + Mitglieder laden ─────────────────────
     nachrichten = ChatNachricht.objects.filter(
-        Q(sender=request.user) | Q(empfaenger=request.user)
-    ).select_related("sender", "empfaenger")
+                    projekt=projekt
+                  ).select_related('sender')
 
-    if request.method == "POST":
-        form = ChatNachrichtForm(request.POST, aktueller_user=request.user)
-        if form.is_valid():
-            nachricht = form.save(commit=False)
-            nachricht.sender = request.user
-            nachricht.save()
-            messages.success(request, "Nachricht wurde gesendet.")
-            return redirect("chat")
-    else:
-        form = ChatNachrichtForm(aktueller_user=request.user)
+    Benutzer = get_user_model()
+    mitglieder = Benutzer.objects.filter(
+                    mitgliedschaften__projekt=projekt
+                 ).distinct()
 
-    return render(request, "aufgaben/chat.html", {
-        "nachrichten": nachrichten,
-        "form": form,
+    return render(request, 'aufgaben/chat.html', {
+        'projekt'    : projekt,
+        'nachrichten': nachrichten,
+        'mitglieder' : mitglieder,
     })

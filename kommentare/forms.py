@@ -7,12 +7,15 @@ class KommentarForm(forms.ModelForm):
         model = Kommentar
         fields = ["text"]
         widgets = {
-            # ✅ Fix #8 aus letztem Review: Textarea statt TextInput
+            # Fix #8 aus letztem Review: Textarea statt TextInput
             "text": forms.Textarea(
                 attrs={
-                    "class": "comment-input",
+                    "class": "kommentar-input",
                     "placeholder": "Kommentar hinzufügen...",
                     "rows": 3,
                 }
             )
+        }
+        labels = {
+            "text": ''
         }

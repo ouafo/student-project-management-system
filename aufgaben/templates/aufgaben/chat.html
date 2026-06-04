@@ -1,120 +1,231 @@
+
 {% extends "base.html" %}
 {% load static %}
 
-{% block titel %}Chat{% endblock %}
+{% block titel %}{{ projekt.titel }} – Chat{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'aufgaben/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'chat/css/chat.css' %}">
 {% endblock %}
 
-{% block content %}
-<div class="dashboard">
+{% block inhalt %}
 
-    <aside class="sidebar">
-        <h1 class="sidebar-logo">Boardify</h1>
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <span>›</span>
+    <a href="{% url 'projekt_detail' projekt.id %}">{{ projekt.titel }}</a>
+    <span>›</span>
+    <span class="breadcrumb-active">Chat</span>
+</div>
 
-        <div class="sidebar-user">
-            <div class="avatar">
-                {{ request.user.username|slice:":2"|upper }}
-            </div>
-            <div>
-                <div class="user-name">
-                    {{ request.user.get_full_name|default:request.user.username }}
-                </div>
-                <div class="user-email">{{ request.user.email }}</div>
-            </div>
+<!-- Tabs -->
+<div class="tabs">
+    <a href="{% url 'projekt_detail' projekt.id %}" class="tab">Aufgaben</a>
+    <a href="{% url 'kanban_board' projekt.id %}" class="tab">Kanban Board</a>
+    <a href="{% url 'chat' projekt.id %}" class="tab active">Chat</a>
+</div>
+
+<!-- Chat Hauptbereich -->
+<div class="chat-layout">
+
+    <!-- Linke Sidebar: Projektinfo + Mitglieder -->
+    <aside class="chat-sidebar">
+
+        <div class="chat-projekt-info">
+            <div class="chat-projekt-icon">💬</div>
+            <h3 class="chat-projekt-name">{{ projekt.titel }}</h3>
+            <p class="chat-projekt-sub">Team Chat</p>
         </div>
 
-        <nav class="sidebar-nav">
-            <a href="{% url 'dashboard' %}" class="nav-item">
-                ⌂ Dashboard
-            </a>
-            <a href="{% url 'dashboard' %}" class="nav-item">
-                ▭ Meine Projekte
-            </a>
-            <a href="{% url 'aufgabe_erstellen' %}" class="nav-item">
-                ⊕ Neue Aufgabe
-            </a>
-            <a href="{% url 'profil_bearbeiten' %}" class="nav-item">
-                ♙ Mein Profil
-            </a>
-            <a href="{% url 'einstellungen' %}" class="nav-item">
-                ⚙ Einstellungen
-            </a>
-        </nav>
-
-        <div class="sidebar-bottom">
-            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
-            <a href="{% url 'logout' %}" class="nav-item logout">
-                ⇱ Abmelden
-            </a>
+        <div class="chat-mitglieder">
+            <h4 class="chat-mitglieder-titel">
+                👥 Mitglieder ({{ mitglieder|length }})
+            </h4>
+            <ul class="mitglieder-liste">
+                {% for mitglied in mitglieder %}
+                <li class="mitglied-item">
+                    <div class="mitglied-avatar
+                         {% if mitglied == request.user %}
+                             mitglied-avatar-own
+                         {% endif %}">
+                        {{ mitglied.username|slice:":2"|upper }}
+                    </div>
+                    <div class="mitglied-info">
+                        <span class="mitglied-name">
+                            {{ mitglied.get_full_name|default:mitglied.username }}
+                        </span>
+                        {% if mitglied == request.user %}
+                            <span class="mitglied-du-badge">Du</span>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
+
     </aside>
 
-    <main class="main-content">
-        <div class="breadcrumb">
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-            <span>›</span>
-            <span class="breadcrumb-active">Chat</span>
+    <!-- Rechter Bereich: Nachrichten + Eingabe -->
+    <div class="chat-main">
+
+        <!-- Kopfzeile -->
+        <div class="chat-header">
+            <span class="chat-header-title"># {{ projekt.titel }}</span>
+            <span class="chat-header-sub">
+                {{ nachrichten|length }} Nachricht{{ nachrichten|length|pluralize:"en" }}
+            </span>
         </div>
 
-        <div class="card">
-            <h2 class="section-title">Team Chat</h2>
+        <!-- Nachrichten Feed -->
+        <div class="chat-nachrichten" id="chat-nachrichten">
 
-            {% for nachricht in nachrichten %}
-                <div class="comment 
-                    {% if nachricht.sender == request.user %}
-                        comment-own
-                    {% endif %}">
+            {% if nachrichten %}
+                {% for nachricht in nachrichten %}
 
-                    {% if nachricht.sender != request.user %}
-                        <div class="avatar">
+                    {# ── Datums-Trennlinie bei Tageswechsel ── #}
+                    {% ifchanged nachricht.erstellt_am|date:"d.m.Y" %}
+                    <div class="chat-datum-trenner">
+                        <span>{{ nachricht.erstellt_am|date:"d. F Y" }}</span>
+                    </div>
+                    {% endifchanged %}
+
+                    <!-- Nachricht -->
+                    <div class="chat-nachricht
+                         {% if nachricht.sender == request.user %}
+                             chat-nachricht-own
+                         {% else %}
+                             chat-nachricht-other
+                         {% endif %}">
+
+                        {# Avatar links (andere) #}
+                        {% if nachricht.sender != request.user %}
+                        <div class="chat-avatar">
                             {{ nachricht.sender.username|slice:":2"|upper }}
                         </div>
-                    {% endif %}
+                        {% endif %}
 
-                    <div class="bubble 
-                        {% if nachricht.sender == request.user %}
-                            me
-                        {% endif %}">
-                        <div class="meta">
-                            <strong>
+                        <div class="chat-bubble-wrapper">
+
+                            {# Sendername (nur bei anderen) #}
+                            {% if nachricht.sender != request.user %}
+                            <div class="chat-sender-name">
                                 {{ nachricht.sender.get_full_name|default:nachricht.sender.username }}
-                            </strong>
-                            {{ nachricht.erstellt_am|date:"d.m.Y H:i" }}
+                            </div>
+                            {% endif %}
+
+                            <div class="chat-bubble
+                                 {% if nachricht.sender == request.user %}
+                                     chat-bubble-own
+                                 {% else %}
+                                     chat-bubble-other
+                                 {% endif %}">
+                                {{ nachricht.text }}
+                            </div>
+
+                            <div class="chat-zeit
+                                 {% if nachricht.sender == request.user %}
+                                     chat-zeit-own
+                                 {% endif %}">
+                                {{ nachricht.erstellt_am|date:"H:i" }} Uhr
+                            </div>
+
                         </div>
-                        <div>{{ nachricht.text }}</div>
+
+                        {# Avatar rechts (eigene) #}
+                        {% if nachricht.sender == request.user %}
+                        <div class="chat-avatar chat-avatar-own">
+                            {{ nachricht.sender.username|slice:":2"|upper }}
+                        </div>
+                        {% endif %}
+
                     </div>
 
-                    {% if nachricht.sender == request.user %}
-                        <div class="avatar">
-                            {{ nachricht.sender.username|slice:":2"|upper }}
-                        </div>
-                    {% endif %}
-                </div>
-            {% empty %}
-                <p class="empty-text">
-                    Noch keine Nachrichten vorhanden.
-                </p>
-            {% endfor %}
+                {% endfor %}
 
-            <!-- Nachricht senden -->
-            <form method="post" style="margin-top: 24px;">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="{{ form.empfaenger.id_for_label }}">
-                        Empfänger
-                    </label>
-                    {{ form.empfaenger }}
+            {% else %}
+                <div class="chat-leer">
+                    <div class="chat-leer-icon">💬</div>
+                    <p>Noch keine Nachrichten vorhanden.</p>
+                    <small>
+                        Starte die Unterhaltung mit deinem Team!
+                    </small>
                 </div>
-                <div class="comment-form">
-                    {{ form.text }}
-                    <button type="submit" class="btn-primary">
-                        Senden
+            {% endif %}
+
+        </div>
+        <!-- Ende: chat-nachrichten -->
+
+        <!-- Eingabebereich -->
+        <div class="chat-eingabe-bereich">
+            <form method="post" id="chat-form">
+                {% csrf_token %}
+                <div class="chat-eingabe-wrapper">
+                    <textarea
+                        name="text"
+                        id="chat-input"
+                        class="chat-input"
+                        placeholder="Nachricht an # {{ projekt.titel }} schreiben…"
+                        rows="3"
+                        maxlength="1000"
+                        required
+                    ></textarea>
+                    <button type="submit"
+                            class="chat-senden-btn"
+                            title="Senden (Enter)">
+                        ➤
                     </button>
+                </div>
+                <div class="chat-eingabe-hinweis">
+                    
                 </div>
             </form>
         </div>
-    </main>
+
+    </div>
+    <!-- Ende: chat-main -->
+
 </div>
+<!-- Ende: chat-layout -->
+
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // ── Auto-Scroll zum neuesten Eintrag ────────────────────
+    const chatFeed = document.getElementById('chat-nachrichten');
+    if (chatFeed) {
+        chatFeed.scrollTop = chatFeed.scrollHeight;
+    }
+
+    const chatInput = document.getElementById('chat-input');
+    const chatForm  = document.getElementById('chat-form');
+
+    if (chatInput && chatForm) {
+
+        // ── Enter = Senden  /  Shift+Enter = neue Zeile ─────
+        chatInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (this.value.trim() !== '') {
+                    chatForm.submit();
+                }
+            }
+        });
+
+        // ── Auto-Resize ──────────────────────────────────────
+        chatInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            const neueHoehe = Math.min(this.scrollHeight, 160);
+            this.style.height = neueHoehe + 'px';
+
+            // Scrollbar nur wenn max-height erreicht
+            this.style.overflowY = this.scrollHeight > 160 ? 'auto' : 'hidden';
+        });
+
+        // ── Nach Seiten-Load: korrektes initiales Sizing ─────
+        chatInput.dispatchEvent(new Event('input'));
+    }
+</script>
+{% endblock %}
+

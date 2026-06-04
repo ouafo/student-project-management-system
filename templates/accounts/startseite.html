@@ -5,44 +5,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Startseite | Boardify</title>
+
   <link rel="stylesheet" href="{% static 'startseite.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
-  <header class="header">
-    <nav class="navbar">
-      <div class="logo"> Boardify</div>
-      <ul class="nav-links">
-        <li><a href="{% url 'register' %}" class="btn">Registrieren</a></li>
-        <li><a href="{% url 'login' %}" class="btn">Anmelden</a></li>
-      </ul>
-    </nav>
-    <div class="hero">
-      <h1>Willkommen bei Boardify</h1>
-      <p>Organisiere deine Projekte effizient und arbeite im Team zusammen.</p>
-      <a href="{% url 'dashboard' %}" class="cta-btn">Jetzt starten</a>
-    </div>
-  </header>
 
-  <section class="features">
-    <h2>Unsere Funktionen</h2>
-    <div class="feature-grid">
-      <div class="feature">
-        <h3>Projektübersicht</h3>
-        <p>Behalte alle Aufgaben und Fortschritte im Blick.</p>
+<header class="header">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">Boardify</div>
+    <ul class="nav-links">
+      <li><a href="{% url 'register' %}" class="btn">Registrieren</a></li>
+      <li><a href="{% url 'login' %}" class="btn">Anmelden</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero" style="background-image: url('{% static "images/hero-bg.png" %}')">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <h1>Boardify</h1>
+      <p>
+        Organisiere deine Projekte. Arbeite im Team.<br>
+        Erreiche deine Ziele.
+      </p>
+
+      <div class="cta-group">
+        <a href="{% url 'login' %}" class="cta-btn primary">Loslegen</a>
       </div>
-      <div class="feature">
-        <h3>Teamkommunikation</h3>
-        <p>Arbeite reibungslos mit deinem Team zusammen.</p>
-      </div>
-      <div class="feature">
-        <h3>Analyse & Berichte</h3>
-        <p>Erhalte wertvolle Einblicke in deine Projekte.</p>
+      <h2 class="features-title">Unsere Funktionen</h2>
+      <!--  CARDS -->
+      <div class="feature-cards">
+
+        <div class="card">
+          <i class="fa-solid fa-list-check"></i>
+          <h3>Aufgaben verwalten</h3>
+          <p>Erstelle und organisiere Aufgaben im Team</p>
+        </div>
+
+        <div class="card">
+          <i class="fa-solid fa-columns"></i>
+          <h3>Kanban Board</h3>
+          <p>Behalte den Überblick visuell im Board</p>
+        </div>
+
+        <div class="card">
+          <i class="fa-solid fa-comments"></i>
+          <h3>Team-Kommunikation</h3>
+          <p>Kommuniziere direkt im Projekt</p>
+        </div>
+
       </div>
     </div>
-  </section>
 
-  <footer>
-    <p>&copy; 2026 Boardify. Alle Rechte vorbehalten.</p>
-  </footer>
+  </div>
+
+</header>
+
+
 </body>
 </html>

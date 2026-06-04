@@ -9,8 +9,10 @@ from kommentare.forms import KommentarForm
 from projekte.models import Projekt
 from .forms import AufgabeForm, StatusForm
 from .models import Aufgabe
-
+from projekte.models import Profile
 logger = logging.getLogger(__name__)
+
+
 
 
 @login_required
@@ -43,11 +45,25 @@ def aufgabe_detail(request, pk):
                 messages.success(request, "Status wurde aktualisiert.")
                 return redirect("aufgabe_detail", pk=aufgabe.pk)
 
+    # ── NEU: Sidebar-Kontext ──────────────────────────────────
+    try:
+        profile = request.user.profil
+    except Exception:
+        profile = None
+
+    vorname = request.user.get_full_name() or request.user.username
+    avatar  = request.user.username[:2].upper()
+    # ─────────────────────────────────────────────────────────
+
     return render(request, "aufgaben/aufgabe_detail.html", {
         "aufgabe":        aufgabe,
         "kommentare":     aufgabe.kommentare.select_related("autor").all(),
         "kommentar_form": kommentar_form,
         "status_form":    status_form,
+        # ── NEU: Sidebar ──
+        "profile":        profile,
+        "vorname":        vorname,
+        "avatar":         avatar,
     })
 
 

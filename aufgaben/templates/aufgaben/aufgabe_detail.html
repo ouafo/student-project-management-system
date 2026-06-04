@@ -27,27 +27,20 @@
 
         <nav class="sidebar-nav">
             <a href="{% url 'dashboard' %}" class="nav-item">
-                ⌂ Dashboard
+                Dashboard
             </a>
-            <a href="{% url 'dashboard' %}" class="nav-item">
-                ▭ Meine Projekte
-            </a>
-            <a href="{% url 'aufgabe_erstellen' %}" class="nav-item">
-                ⊕ Neue Aufgabe
-            </a>
-            <a href="{% url 'profil_bearbeiten' %}" class="nav-item">
-                ♙ Mein Profil
-            </a>
+
             <a href="{% url 'einstellungen' %}" class="nav-item">
-                ⚙ Einstellungen
+                Einstellungen
             </a>
         </nav>
 
         <div class="sidebar-bottom">
-            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
+<!--            <a href="#" class="nav-item">♢ Benachrichtigungen</a>
             <a href="{% url 'logout' %}" class="nav-item logout">
                 ⇱ Abmelden
             </a>
+-->
         </div>
     </aside>
 
@@ -77,7 +70,7 @@
            class="tab">
             Kanban Board
         </a>
-        <a href="{% url 'chat' %}"
+        <a href="{% url 'chat' aufgabe.projekt.id %}"
            class="tab">
             Chat
         </a>
@@ -92,143 +85,151 @@
             </div>
         {% endif %}
 
-        <div class="detail-layout">
-            <div>
-                <!-- Beschreibung -->
-                <div class="card">
-                    <h1 class="card-title">{{ aufgabe.titel }}</h1>
-                    <div class="description">
-                        {{ aufgabe.beschreibung }}
-                    </div>
-                </div>
+<div class="detail-layout">
 
-                <!-- Kommentare -->
-                <div class="card">
-                    <h2 class="section-title">
-                        Kommentare ({{ kommentare|length }})
-                    </h2>
-
-                    {% for kommentar in kommentare %}
-                        <div class="comment 
-                            {% if kommentar.autor == request.user %}
-                                comment-own
-                            {% endif %}">
-                            <div class="avatar">
-                                {{ kommentar.autor.username|slice:":2"|upper }}
-                            </div>
-                            <div class="bubble 
-                                {% if kommentar.autor == request.user %}
-                                    me
-                                {% endif %}">
-                                <div class="meta">
-                                    <strong>
-                                        {{ kommentar.autor.get_full_name|default:kommentar.autor.username }}
-                                    </strong>
-                                    {{ kommentar.erstellt_am|date:"d.m.Y H:i" }}
-                                </div>
-                                <div>{{ kommentar.text }}</div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <p class="empty-text">
-                            Noch keine Kommentare vorhanden.
-                        </p>
-                    {% endfor %}
-
-                    <!-- Kommentar Formular -->
-                    <form method="post" class="comment-form">
-                        {% csrf_token %}
-                        {{ kommentar_form.text }}
-                        <button type="submit" 
-                                name="kommentar_absenden" 
-                                class="btn-primary">
-                            Senden
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Details Sidebar -->
-            <div>
-                <div class="card">
-                    <h2 class="section-title">Details</h2>
-
-                    <!-- Status -->
-                    <div class="detail-item">
-                        <div class="detail-label">Status</div>
-                        <form method="post">
-                            {% csrf_token %}
-                            {{ status_form.status }}
-                            <button type="submit" 
-                                    name="status_speichern" 
-                                    class="btn-primary" 
-                                    style="margin-top:10px;">
-                                Speichern
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Priorität -->
-                    <div class="detail-item">
-                        <div class="detail-label">Priorität</div>
-                        <span class="prioritaet-badge 
-                              prioritaet-{{ aufgabe.prioritaet }}">
-                            {{ aufgabe.get_prioritaet_display }}
-                        </span>
-                    </div>
-
-                    <!-- Zugewiesen an -->
-                    <div class="detail-item">
-                        <div class="detail-label">Zugewiesen an</div>
-                        <div>
-                            {% if aufgabe.zugewiesen_an %}
-                                {{ aufgabe.zugewiesen_an.get_full_name|default:aufgabe.zugewiesen_an.username }}
-                            {% else %}
-                                Nicht zugewiesen
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Erstellt von -->
-                    <div class="detail-item">
-                        <div class="detail-label">Erstellt von</div>
-                        <div>
-                            {{ aufgabe.erstellt_von.get_full_name|default:aufgabe.erstellt_von.username }}
-                        </div>
-                    </div>
-
-                    <!-- Erstellt am -->
-                    <div class="detail-item">
-                        <div class="detail-label">Erstellt am</div>
-                        <div>{{ aufgabe.erstellt_am|date:"d.m.Y" }}</div>
-                    </div>
-
-                    <!-- Deadline -->
-                    <div class="detail-item">
-                        <div class="detail-label">Deadline</div>
-                        <div>
-                            {% if aufgabe.deadline %}
-                                {{ aufgabe.deadline|date:"d.m.Y" }}
-                            {% else %}
-                                Keine Deadline
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Aktionen -->
-                    <div class="actions">
-                        <a href="{% url 'aufgabe_bearbeiten' aufgabe.pk %}" 
-                           class="btn-primary">
-                            Bearbeiten
-                        </a>
-                        <a href="{% url 'aufgabe_loeschen' aufgabe.pk %}" 
-                           class="btn-danger">
-                            Löschen
-                        </a>
-                    </div>
-                </div>
+    <!--  LINKE SPALTE -->
+    <div>
+        <!-- Beschreibung -->
+        <div class="card">
+            <h1 class="card-title">{{ aufgabe.titel }}</h1>
+            <div class="description">
+                {{ aufgabe.beschreibung }}
             </div>
         </div>
+
+        <!-- Kommentare -->
+        <div class="card">
+            <h2 class="section-title">
+                💬 Kommentare ({{ kommentare|length }})
+            </h2>
+
+            <div class="kommentar-liste">
+                {% for kommentar in kommentare %}
+                <div class="kommentar-eintrag">
+                    <div class="kommentar-header">
+                        <div class="avatar">
+                            {{ kommentar.autor.username|slice:":2"|upper }}
+                        </div>
+                        <div class="kommentar-meta">
+                            {% if kommentar.autor == request.user %}
+                                <span class="kommentar-badge">Du</span>
+                            {% endif %}
+                            <span class="kommentar-datum">
+                                {{ kommentar.erstellt_am|date:"d.m.Y" }}
+                                um {{ kommentar.erstellt_am|date:"H:i" }} Uhr
+                            </span>
+                        </div>
+                    </div>
+                    <div class="kommentar-text">
+                        {{ kommentar.text }}
+                    </div>
+                </div>
+                {% if not forloop.last %}
+                    <hr class="kommentar-divider">
+                {% endif %}
+                {% empty %}
+                <div class="kommentar-leer">
+                    <p>Noch keine Kommentare vorhanden.</p>
+                    <small>Sei der Erste, der einen Kommentar hinterlässt!</small>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="kommentar-formular">
+                <h3 class="formular-titel">Kommentar schreiben</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ kommentar_form.text }}
+                        {% if kommentar_form.text.errors %}
+                            <span class="field-error">
+                                {{ kommentar_form.text.errors.0 }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <button type="submit"
+                            name="kommentar_absenden"
+                            class="btn-primary">
+                        Kommentar hinzufügen
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <h2 class="section-title">Details</h2>
+
+            <div class="detail-item">
+                <div class="detail-label">Status</div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ status_form.status }}
+                    <button type="submit"
+                            name="status_speichern"
+                            class="btn-primary"
+                            style="margin-top:10px;">
+                        Speichern
+                    </button>
+                </form>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Priorität</div>
+                <span class="prioritaet-badge prioritaet-{{ aufgabe.prioritaet }}">
+                    {{ aufgabe.get_prioritaet_display }}
+                </span>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Zugewiesen an</div>
+                <div>
+                    {% if aufgabe.zugewiesen_an %}
+                        {{ aufgabe.zugewiesen_an.get_full_name|default:aufgabe.zugewiesen_an.username }}
+                    {% else %}
+                        Nicht zugewiesen
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Erstellt von</div>
+                <div>
+                    {{ aufgabe.erstellt_von.get_full_name|default:aufgabe.erstellt_von.username }}
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Erstellt am</div>
+                <div>{{ aufgabe.erstellt_am|date:"d.m.Y" }}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Deadline</div>
+                <div>
+                    {% if aufgabe.deadline %}
+                        {{ aufgabe.deadline|date:"d.m.Y" }}
+                    {% else %}
+                        Keine Deadline
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'aufgabe_bearbeiten' aufgabe.pk %}"
+                   class="btn-primary">
+                    Bearbeiten
+                </a>
+                <a href="{% url 'aufgabe_loeschen' aufgabe.pk %}"
+                   class="btn-danger">
+                    Löschen
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
     </main>
 </div>
 {% endblock %}
